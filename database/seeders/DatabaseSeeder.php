@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
-use App\Models\Info;
+use App\Models\Config;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -23,8 +23,13 @@ class DatabaseSeeder extends Seeder
             'abilities' => ["*"],
             'database' => 'shopify-1',
         ]);
-
-//        Info::query()->create([
-//        ]);
+        Config::query()->create([
+            'key' => 'transit-fee',
+            'value' => 90,
+        ]);
+        Config::query()->create([
+           'key' => 'transit-fee-max',
+           'value' => 450,
+        ]);
     }
 }

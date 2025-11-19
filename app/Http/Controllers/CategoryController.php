@@ -38,10 +38,8 @@ class CategoryController extends Controller
         if (isset($validated['parent_id'])) {
             $parent = Category::query()->findOrFail($validated['parent_id']);
             if ($parent->depth > 5) {
-                var_dump($parent->depth);
                 return response()->json(["message" => "Maximum number of subcategories reached"]);
             }
-            var_dump($parent->depth);
             $validated['depth'] = $parent->depth + 1;
         } else {
             $validated['depth'] = 0;

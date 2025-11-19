@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Resources\BaseResource;
 use App\Models\Admin;
+use App\Models\CustomPersonalAccessToken;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -99,5 +100,11 @@ class Utils
     public static function isAuthorized(Admin $admin, string $ability): bool
     {
         return !($admin->is_main_admin || in_array($ability, $admin->abilities));
+    }
+
+    public static function getTokenFromRequest(Request $request): string
+    {
+        $tok = $request->header('Authorization');
+        return CustomPersonalAccessToken::customFindToken(explode("Bearer ", $tok)[1], $request);
     }
 }

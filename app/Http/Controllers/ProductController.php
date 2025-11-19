@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
+use App\Models\Admin;
 use App\Models\Category;
 use App\Models\Product;
 use App\Services\Utils;
+use GeoSot\EnvEditor\EnvEditor;
+use GeoSot\EnvEditor\Exceptions\EnvException;
+use Illuminate\Config\Repository;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -59,7 +64,6 @@ class ProductController extends Controller
         if (Utils::isAuthorized($request->user('admin'), 'product-index')) {
             return response()->json(["error" => "Unauthorized."]);
         }
-        var_dump($request->bearerToken());
         return Utils::automatedPaginationWithBuilder($request, Product::with(['category']), ProductResource::class);
     }
 

@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
+use App\Models\Database;
 use App\Services\Utils;
+use GeoSot\EnvEditor\EnvEditor;
+use Illuminate\Config\Repository;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use PDO;
 
 class AdminController extends Controller
 {
-    /**
-     * @throws ValidationException
-     */
     public function login(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -30,7 +32,7 @@ class AdminController extends Controller
         }
 
         return response()->json([
-            'token' => $admin->createToken('admin-token', $admin->database)->plainTextToken
+            'token' => $admin->createToken('admin-token', $request)->plainTextToken
         ]);
     }
 

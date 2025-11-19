@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../InternshipProject/.idea/InternshipProject.iml" filepath="$PROJECT_DIR$/../InternshipProject/.idea/InternshipProject.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../MiniProject/.idea/MiniProject.iml" filepath="$PROJECT_DIR$/../MiniProject/.idea/MiniProject.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../Miniproject4/.idea/Miniproject4.iml" filepath="$PROJECT_DIR$/../Miniproject4/.idea/Miniproject4.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/shopify.iml" filepath="$PROJECT_DIR$/.idea/shopify.iml" />
     </modules>
   </component>
