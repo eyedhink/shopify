@@ -3,19 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
-use App\Models\Database;
 use App\Services\Utils;
-use GeoSot\EnvEditor\EnvEditor;
-use Illuminate\Config\Repository;
-use Illuminate\Filesystem\Filesystem;
+use GeoSot\EnvEditor\Exceptions\EnvException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use PDO;
 
 class AdminController extends Controller
 {
+    /**
+     * @throws ValidationException
+     * @throws EnvException
+     */
     public function login(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -38,7 +38,7 @@ class AdminController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'admin-store')) {
+        if (!Utils::isAuthorized($request->user('admin'), 'admin-store')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         $validated = $request->validate([

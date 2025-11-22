@@ -1,13 +1,8 @@
-Q #1: How should I handle payments?
-Q #2: Ask about the way of handling carts and orders(Ask if carts should actually be treated as cart items, and where and how to store the extra stuff like address and ...).
-Q #3: Should addresses have a separate model?
-Q #4: Whats up with the constant restarting of the server when using storeBunchExcel?
-Q #5: Why did you give me false information on jobs?
+Q #4: Whats up with the constant restarting of the server when using storeBunchExcel? Do WSL Stuff
 
 
 ----------------------------------
 TODO:
 Add the excel spreadsheet support to the storeBunch method - 50/50
-Add support team stuff(Tickets and messaging stuff, tickets can probably be closed)
 Expand upon the ability system
 Check if things work

@@ -5,16 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Ticket extends Model
+class Address extends Model
 {
-    use SoftDeletes;
+    protected $table = 'addresses';
 
     protected $fillable = [
-        'title',
-        'content',
         'user_id',
+        'address',
+        'name'
     ];
 
     public function user(): BelongsTo
@@ -22,8 +21,8 @@ class Ticket extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function messages(): HasMany
+    public function orders(): HasMany
     {
-        return $this->hasMany(Message::class);
+        return $this->hasMany(Order::class);
     }
 }

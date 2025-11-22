@@ -15,7 +15,7 @@ class ItemResource extends BaseResource
     {
         $attributes = parent::toArray($request);
         $customFields = [
-            'user' => BaseResource::make($this->whenLoaded('user')),
+            'user' => UserResource::make($this->whenLoaded('user')),
             'product' => ProductResource::make($this->whenLoaded('product')),
         ];
         return array_merge($attributes, $customFields);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ItemResource;
+use App\Models\Address;
 use App\Models\Config;
 use App\Models\Item;
 use App\Models\Order;
@@ -15,10 +16,11 @@ class CartController extends Controller
     function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'user_id' => ['required', 'integer', 'exists:users,id'],
             'product_id' => ['required', 'integer', 'exists:products,id'],
             'quantity' => ['required', 'decimal', 'not_in:0'],
         ]);
+
+        $validated['user_id'] = $request->user('user')->id;
 
         $item = Item::query()->where('user_id', $validated['user_id'])->firstWhere('product_id', $validated['product_id']);
 
@@ -47,25 +49,52 @@ class CartController extends Controller
 
     function index(Request $request): JsonResponse
     {
-        return Utils::automatedPaginationWithBuilder($request, Item::with(["user", "product"]), ItemResource::class);
+        return Utils::automatedPaginationWithBuilder
+        (
+            $request,
+            Item::with(["user", "product"])
+                ->where(
+                    'user_id', $request
+                    ->user('user')
+                    ->id
+                ),
+            ItemResource::class
+        );
     }
 
-    function show($id): JsonResponse
+    function show(Request $request, $id): JsonResponse
     {
-        return response()->json(ItemResource::make(Item::query()->findOrFail($id)));
+        return response()->json(
+            ItemResource::make
+            (
+                Item::query()
+                    ->where('user_id', $request->user('user')->id)
+                    ->findOrFail($id)
+            )
+        );
     }
 
-    function destroy($id): JsonResponse
+    function destroy(Request $request, $id): JsonResponse
     {
-        Item::query()->findOrFail($id)->delete();
+        $item = Item::query()->findOrFail($id);
+
+        if ($item->user_id != $request->user('user')->id) {
+            return response()->json(['error' => 'Not allowed to delete item']);
+        }
+
+        $item->delete();
         return response()->json(["message" => "Item deleted successfully"]);
     }
 
     function submit(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'address' => ['required', 'string'],
+            'address_id' => ['required', 'integer', 'exists:addresses,id'],
         ]);
+        $address = Address::query()->findOrFail($validated['address_id']);
+        if ($address->user_id != $request->user('user')->id) {
+            return response()->json(['error' => 'Not allowed to use address']);
+        }
         $items = [];
         $total = 0;
         foreach ($request->user('user')->items as $item) {
@@ -73,14 +102,14 @@ class CartController extends Controller
             $total += $item->quantity * $item->price;
             $item->delete();
         }
-        if($total < Config::query()->firstWhere('key' , "transit-fee-max")->value) {
-            $total += Config::query()->firstWhere('key' , "transit-fee")->value;
+        if ($total < Config::query()->firstWhere('key', "transit-fee-max")->value) {
+            $total += Config::query()->firstWhere('key', "transit-fee")->value;
         }
         Order::query()->create([
             'user_id' => $request->user('user')->id,
             'items' => json_encode($items),
             'timestamp' => time(),
-            'address' => $validated['address'],
+            'address_id' => $validated['address_id'],
             'total' => $total,
         ]);
         return response()->json(["message" => "Order submitted"]);

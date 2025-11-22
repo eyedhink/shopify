@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 
-class ProductResource extends BaseResource
+class UserResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
@@ -15,8 +15,11 @@ class ProductResource extends BaseResource
     {
         $attributes = parent::toArray($request);
         $customFields = [
-            'category' => CategoryResource::make($this->whenLoaded('category')),
             'items' => ItemResource::collection($this->whenLoaded('items')),
+            'orders' => OrderResource::collection($this->whenLoaded('orders')),
+            'tickets' => TicketResource::collection($this->whenLoaded('tickets')),
+            'messages' => MessageResource::collection($this->whenLoaded('messages')),
+            'addresses' => AddressResource::collection($this->whenLoaded('addresses')),
         ];
         return array_merge($attributes, $customFields);
     }

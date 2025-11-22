@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\BaseResource;
-use App\Imports\DataImport;
+use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\Utils;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
-use Maatwebsite\Excel\Facades\Excel;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class UserController extends Controller
 {
@@ -48,7 +45,7 @@ class UserController extends Controller
 
         $user = User::query()->create($validated);
 
-        return response()->json(BaseResource::make($user));
+        return response()->json(UserResource::make($user));
     }
 
     public function doesExist(Request $request): JsonResponse
@@ -65,8 +62,11 @@ class UserController extends Controller
             'name' => ['required', 'string', 'unique:users,name'],
             'password' => ['required', 'string'],
         ]);
+        if (!Utils::isAuthorized($request->user('admin'), 'user-store')) {
+            return response()->json(["error" => "Unauthorized"]);
+        }
         $user = User::query()->create($validated);
-        return response()->json(BaseResource::make($user));
+        return response()->json(UserResource::make($user));
     }
 
     function storeBunch(Request $request): JsonResponse
@@ -77,23 +77,30 @@ class UserController extends Controller
             'users.*.password' => ['required_with:users.*', 'string'],
             'users.*.phone' => ['required_with:users.*', 'string', 'unique:users,phone'],
         ]);
+        if (!Utils::isAuthorized($request->user('admin'), 'user-store-bunch')) {
+            return response()->json(["error" => "Unauthorized"]);
+        }
         foreach ($validated["users"] as $user) {
             User::query()->create($user);
         }
         return response()->json(["message" => "Users added"]);
     }
 
-    function storeBunchExcel(Request $request)
+    function storeBunchExcel(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'file' => ['required', 'file', 'mimes:xlsx']
-        ]);
-        $validated['file'] = $request->file("file")->store('excel', 'private');
-        $contents = Storage::disk('local')->get($validated['file']);
-        $path = Storage::disk('local')->path($validated['file']);
-        var_dump($path);
-       $spreadsheet = IOFactory::load($path);
-       $data = $spreadsheet->getActiveSheet()->toArray();
-       dd($data);
+        if (!Utils::isAuthorized($request->user('admin'), 'user-store-bunch')) {
+            return response()->json(["error" => "Unauthorized"]);
+        }
+//        $validated = $request->validate([
+//            'file' => ['required', 'file', 'mimes:xlsx']
+//        ]);
+//        $validated['file'] = $request->file("file")->store('excel', 'private');
+//        $contents = Storage::disk('local')->get($validated['file']);
+//        $path = Storage::disk('local')->path($validated['file']);
+//        var_dump($path);
+//       $spreadsheet = IOFactory::load($path);
+//       $data = $spreadsheet->getActiveSheet()->toArray();
+//       dd($data);
+        return response()->json(["message" => "Under Construction"]);
     }
 }

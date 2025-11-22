@@ -14,6 +14,12 @@ class MessageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        $attributes = parent::toArray($request);
+        $customFields = [
+            'user' => UserResource::make($this->whenLoaded('user')),
+            'admin' => AdminResource::make($this->whenLoaded('admin')),
+            'ticket' => TicketResource::make($this->whenLoaded('ticket')),
+        ];
+        return array_merge($attributes, $customFields);
     }
 }

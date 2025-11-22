@@ -17,7 +17,8 @@ class Order extends Model
         'address',
         'status',
         'total',
-        'type'
+        'type',
+        'address_id',
     ];
 
     protected $casts = [
@@ -27,5 +28,10 @@ class Order extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function address(): BelongsTo
+    {
+        return $this->belongsTo(Address::class);
     }
 }

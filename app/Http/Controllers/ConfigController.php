@@ -12,6 +12,9 @@ class ConfigController extends Controller
 {
     public function store(Request $request): JsonResponse
     {
+        if (!Utils::isAuthorized($request->user('admin'), 'config-store')) {
+            return response()->json(["error" => "Unauthorized."]);
+        }
         $validated = $request->validate([
             'key' => ['required', 'string'],
             'value' => ['required', 'string'],
@@ -22,16 +25,26 @@ class ConfigController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        if (!Utils::isAuthorized($request->user('admin'), 'config-index')) {
+            return response()->json(["error" => "Unauthorized."]);
+        }
         return Utils::automatedPagination($request, Config::class, BaseResource::class);
     }
 
-    public function show($id): JsonResponse
+    public function show($id, Request $request): JsonResponse
     {
+
+        if (!Utils::isAuthorized($request->user('admin'), 'config-show')) {
+            return response()->json(["error" => "Unauthorized."]);
+        }
         return response()->json(BaseResource::make(Config::query()->findOrFail($id)));
     }
 
     public function edit(Request $request, $key): JsonResponse
     {
+        if (!Utils::isAuthorized($request->user('admin'), 'config-edit')) {
+            return response()->json(["error" => "Unauthorized."]);
+        }
         $validated = $request->validate([
             'value' => ['required', 'string'],
         ]);
@@ -39,17 +52,11 @@ class ConfigController extends Controller
         return response()->json(["message" => "Config updated successfully"]);
     }
 
-    public function update(Request $request, $id): JsonResponse
+    public function destroy($id, Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'value' => ['required', 'string'],
-        ]);
-        Config::query()->findOrFail($id)->update($validated);
-        return response()->json(["message" => "Config updated successfully"]);
-    }
-
-    public function destroy($id): JsonResponse
-    {
+        if (!Utils::isAuthorized($request->user('admin'), 'config-destroy')) {
+            return response()->json(["error" => "Unauthorized."]);
+        }
         Config::query()->findOrFail($id)->delete();
         return response()->json(["message" => "Config deleted successfully"]);
     }

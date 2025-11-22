@@ -5,10 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Services\Utils;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,7 +12,7 @@ class CategoryController extends Controller
 {
     public function store(Request $request): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'category-store')) {
+        if (!Utils::isAuthorized($request->user('admin'), 'category-store')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         $validated = $request->validate([
@@ -50,23 +46,17 @@ class CategoryController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'category-index')) {
-            return response()->json(["error" => "Unauthorized."]);
-        }
         return Utils::automatedPaginationWithBuilder($request, Category::with(["products", "parent", "children"]), CategoryResource::class);
     }
 
-    public function show(Request $request, $id): JsonResponse
+    public function show($id): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'category-show')) {
-            return response()->json(["error" => "Unauthorized."]);
-        }
         return response()->json(CategoryResource::make(Category::query()->findOrFail($id)));
     }
 
     public function edit(Request $request, $id): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'category-edit')) {
+        if (!Utils::isAuthorized($request->user('admin'), 'category-edit')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         $validated = $request->validate([
@@ -105,7 +95,7 @@ class CategoryController extends Controller
 
     public function delete(Request $request, $id): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'category-delete')) {
+        if (!Utils::isAuthorized($request->user('admin'), 'category-delete')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         Category::query()->findOrFail($id)->delete();
@@ -115,7 +105,7 @@ class CategoryController extends Controller
 
     public function restore(Request $request, $id): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'category-restore')) {
+        if (!Utils::isAuthorized($request->user('admin'), 'category-restore')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         Category::withTrashed()->findOrFail($id)->restore();
@@ -125,7 +115,7 @@ class CategoryController extends Controller
 
     public function destroy(Request $request, $id): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'category-destroy')) {
+        if (!Utils::isAuthorized($request->user('admin'), 'category-destroy')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         Category::withTrashed()->findOrFail($id)->forceDelete();

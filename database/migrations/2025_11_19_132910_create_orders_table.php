@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('status')->default('pending payment');
             $table->integer('total');
             $table->string('type')->default('online');
+            $table->foreignId('address_id')->nullable()->constrained('addresses');
             $table->softDeletes();
             $table->timestamps();
         });

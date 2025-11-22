@@ -3,9 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
-class TicketResource extends JsonResource
+class TicketResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
@@ -14,6 +13,11 @@ class TicketResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        $attributes = parent::toArray($request);
+        $customFields = [
+            'user' => UserResource::make($this->whenLoaded('user')),
+            'messages' => MessageResource::collection($this->whenLoaded('messages')),
+        ];
+        return array_merge($attributes, $customFields);
     }
 }

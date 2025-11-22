@@ -3,10 +3,8 @@
 namespace App\Models;
 
 use App\Utils\Traits\CustomHasApiTokens;
-use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Sanctum\HasApiTokens;
-use Laravel\Sanctum\NewAccessToken;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Admin extends Model
 {
@@ -28,4 +26,9 @@ class Admin extends Model
     protected $hidden = [
         'password',
     ];
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(Message::class);
+    }
 }

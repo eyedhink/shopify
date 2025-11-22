@@ -3,14 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
-use App\Models\Admin;
 use App\Models\Category;
 use App\Models\Product;
 use App\Services\Utils;
-use GeoSot\EnvEditor\EnvEditor;
-use GeoSot\EnvEditor\Exceptions\EnvException;
-use Illuminate\Config\Repository;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -18,7 +13,7 @@ class ProductController extends Controller
 {
     public function store(Request $request): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'product-store')) {
+        if (!Utils::isAuthorized($request->user('admin'), 'product-store')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         $validated = $request->validate([
@@ -61,23 +56,17 @@ class ProductController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'product-index')) {
-            return response()->json(["error" => "Unauthorized."]);
-        }
         return Utils::automatedPaginationWithBuilder($request, Product::with(['category']), ProductResource::class);
     }
 
-    public function show(Request $request, $id): JsonResponse
+    public function show($id): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'product-show')) {
-            return response()->json(["error" => "Unauthorized."]);
-        }
         return response()->json(ProductResource::make(Product::with(['category'])->findOrFail($id)));
     }
 
     public function edit(Request $request, $id): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'product-edit')) {
+        if (!Utils::isAuthorized($request->user('admin'), 'product-edit')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         $validated = $request->validate([
@@ -129,7 +118,7 @@ class ProductController extends Controller
 
     public function delete(Request $request, $id): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'product-delete')) {
+        if (!Utils::isAuthorized($request->user('admin'), 'product-delete')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         Product::query()->findOrFail($id)->delete();
@@ -138,7 +127,7 @@ class ProductController extends Controller
 
     public function restore(Request $request, $id): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'product-restore')) {
+        if (!Utils::isAuthorized($request->user('admin'), 'product-restore')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         Product::withTrashed()->findOrFail($id)->restore();
@@ -147,7 +136,7 @@ class ProductController extends Controller
 
     public function destroy(Request $request, $id): JsonResponse
     {
-        if (Utils::isAuthorized($request->user('admin'), 'product-destroy')) {
+        if (!Utils::isAuthorized($request->user('admin'), 'product-destroy')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         Product::withTrashed()->findOrFail($id)->forceDelete();

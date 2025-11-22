@@ -3,9 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
-class OrderResource extends JsonResource
+class AdminResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
@@ -16,8 +15,7 @@ class OrderResource extends JsonResource
     {
         $attributes = parent::toArray($request);
         $customFields = [
-            'user' => UserResource::make($this->whenLoaded('user')),
-            'address' => AddressResource::make($this->whenLoaded('address')),
+            'messages' => MessageResource::collection($this->whenLoaded('messages')),
         ];
         return array_merge($attributes, $customFields);
     }
