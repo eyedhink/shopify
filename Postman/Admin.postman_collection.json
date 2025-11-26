@@ -1,0 +1,1135 @@
+{
+	"info": {
+		"_postman_id": "b90d0bde-30df-46be-975a-2a71506414cd",
+		"name": "Admin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48042479",
+		"_collection_link": "https://eyedhink-8141335.postman.co/workspace/shopify~8f319b07-9e4c-4a3f-a857-989f88a1fcab/collection/48042479-b90d0bde-30df-46be-975a-2a71506414cd?action=share&source=collection_link&creator=48042479"
+	},
+	"item": [
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"super\",\r\n    \"password\": \"password\",\r\n    \"abilities\": [\"category-store\"],\r\n    \"database\": \"shopify-1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/admin-store",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"admin-store"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Chips\",\r\n    \"seo_title\": \"Chips\",\r\n    \"seo_meta_description\": \"Delic\",\r\n    \"seo_keywords\": [\"LOL\", \"Hell Yeah\"],\r\n    \"parent_id\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/category-create",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"category-create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Edibles\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/category-edit/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"category-edit",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Soft Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/category-delete/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"category-delete",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Restore",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/category-restore/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"category-restore",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Force Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/category-force-delete/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"category-force-delete",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Config",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"key\": \"is_johned\",\r\n    \"value\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/config-store",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"config-store"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Index",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/config-index",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"config-index"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/config-show/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"config-show",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"value\": \"100\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/config-edit/transit-fee",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"config-edit",
+								"transit-fee"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/config-delete/3",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"config-delete",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Message",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\": \"HMMMMMM\",\r\n    \"ticket_id\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/message-store-admin",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"message-store-admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Index",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1,\r\n    \"ticket_id\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/message-index-admin",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"message-index-admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/message-show-admin/2",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"message-show-admin",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\": \"sth\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/message-edit-admin/2",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"message-edit-admin",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/message-destroy-admin/2",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"message-destroy-admin",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order",
+			"item": [
+				{
+					"name": "Index",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/order-index",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"order-index"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/order-show/5",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"order-show",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"completed\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/order-update-status/5",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"order-update-status",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Soft Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/order-delete/5",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"order-delete",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Restore",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/order-restore/5",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"order-restore",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Force Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/order-force-delete/5",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"order-force-delete",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Manual Create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user_id\": 1,\r\n    \"items\": [{\"product_id\": 2, \"quantity\": 1}]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/order-manual-store",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"order-manual-store"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "countable",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "category_id",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Spicy Chips",
+									"type": "text"
+								},
+								{
+									"key": "primary_image",
+									"type": "file",
+									"src": "postman-cloud:///1f0ac26d-d503-4000-896f-23b2b44a6beb"
+								},
+								{
+									"key": "gallery[]",
+									"type": "file",
+									"src": "postman-cloud:///1f0a9b38-ff60-42f0-bc66-67e45b67e7a9"
+								},
+								{
+									"key": "english_name",
+									"value": "Spicy Chips",
+									"type": "text"
+								},
+								{
+									"key": "seo_title",
+									"value": "nah",
+									"type": "text"
+								},
+								{
+									"key": "seo_meta_description",
+									"value": "I'd win",
+									"type": "text"
+								},
+								{
+									"key": "seo_keywords[]",
+									"value": "lol",
+									"type": "text"
+								},
+								{
+									"key": "seo_keywords[]",
+									"value": "ts crazy",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "hot",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "1000",
+									"type": "text"
+								},
+								{
+									"key": "discount",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "stock",
+									"value": "20",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api}}/product-create",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"product-create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "description",
+									"value": "SPICY!!!",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api}}/product-edit/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"product-edit",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Soft Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/product-delete/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"product-delete",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Restore",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/product-restore/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"product-restore",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Force Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/product-force-delete/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"product-force-delete",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ticket",
+			"item": [
+				{
+					"name": "Index",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/ticket-index-admin",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"ticket-index-admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/ticket-show-admin/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"ticket-show-admin",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\": \"ik\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/ticket-edit-admin/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"ticket-edit-admin",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Soft Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/ticket-delete-admin/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"ticket-delete-admin",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Restore",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/ticket-restore-admin/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"ticket-restore-admin",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Force Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/ticket-force-delete-admin/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"ticket-force-delete-admin",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"USAIN\",\r\n    \"password\": \"password\",\r\n    \"database\": \"shopify-1\",\r\n    \"phone\": \"12\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/user-store",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"user-store"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Store Bunch",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"users\": [\r\n        {\r\n            \"name\": \"U3\",\r\n            \"password\": \"password\",\r\n            \"phone\": \"13\"\r\n        }, {\r\n            \"name\": \"U2\",\r\n            \"password\": \"password\",\r\n            \"phone\": \"11\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/user-store-bunch",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"user-store-bunch"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Store Bunch Excel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api}}/user-store-bunch-excel",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"user-store-bunch-excel"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{admin-token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "admin-token",
+			"value": ""
+		}
+	]
+}

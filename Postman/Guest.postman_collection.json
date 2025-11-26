@@ -1,0 +1,262 @@
+{
+	"info": {
+		"_postman_id": "bbcfdc87-cba4-40cc-b97e-b0f96dcedea3",
+		"name": "Guest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48042479",
+		"_collection_link": "https://eyedhink-8141335.postman.co/workspace/shopify~8f319b07-9e4c-4a3f-a857-989f88a1fcab/collection/48042479-bbcfdc87-cba4-40cc-b97e-b0f96dcedea3?action=share&source=collection_link&creator=48042479"
+	},
+	"item": [
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Admin\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/admin-login",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"admin-login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "Index",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/category-index",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"category-index"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/category-show/4",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"category-show",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "Index",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/product-index",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"product-index"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api}}/product-show/1",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"product-show",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone\": \"1234567890\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/user-login",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"user-login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"JOHN\",\r\n    \"password\": \"password\",\r\n    \"phone\": \"12121212\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/user-register",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"user-register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Does Exist",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"JOHN\",\r\n    \"password\": \"password\",\r\n    \"phone\": \"12121212\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api}}/user-does-exist",
+							"host": [
+								"{{api}}"
+							],
+							"path": [
+								"user-does-exist"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
