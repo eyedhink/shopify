@@ -65,7 +65,8 @@ class MessageController extends Controller
 
     public function show(Request $request, $id): JsonResponse
     {
-        $ticket = Ticket::query()->findOrFail($id);
+        $message = Message::query()->findOrFail($id);
+        $ticket = $message->ticket;
         if (Auth::guard('user')->check()) {
             if ($ticket->user_id != $request->user('user')->id) {
                 return response()->json(["error" => "You are not allowed to show messages on this ticket."]);
@@ -76,7 +77,7 @@ class MessageController extends Controller
                 return response()->json(["error" => "Unauthorized."]);
             }
         }
-        return response()->json(MessageResource::make(Message::query()->findOrFail($id)));
+        return response()->json(MessageResource::make($message));
     }
 
     public function edit(Request $request, $id): JsonResponse

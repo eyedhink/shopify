@@ -38,7 +38,7 @@ class AddressController extends Controller
         (
             AddressResource::make
             (
-                Address::query()
+                Address::with('user')
                     ->where('user_id', $request->user('user')->id)
                     ->findOrFail($id)
             )

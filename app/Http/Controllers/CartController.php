@@ -7,6 +7,7 @@ use App\Models\Address;
 use App\Models\Config;
 use App\Models\Item;
 use App\Models\Order;
+use App\Models\Product;
 use App\Services\Utils;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,10 +18,12 @@ class CartController extends Controller
     {
         $validated = $request->validate([
             'product_id' => ['required', 'integer', 'exists:products,id'],
-            'quantity' => ['required', 'decimal', 'not_in:0'],
+            'quantity' => ['required', 'numeric', 'not_in:0'],
         ]);
 
         $validated['user_id'] = $request->user('user')->id;
+
+        $product = Product::query()->findOrFail($validated['product_id']);
 
         $item = Item::query()->where('user_id', $validated['user_id'])->firstWhere('product_id', $validated['product_id']);
 
@@ -30,7 +33,7 @@ class CartController extends Controller
                 $item->delete();
                 return response()->json(["error" => "Removed item from cart"]);
             }
-            if ($newQuantity > $item->stock) {
+            if ($newQuantity > $product->stock) {
                 return response()->json(["error" => "Insufficient stock"], 400);
             }
             $item->quantity = $newQuantity;
@@ -67,7 +70,7 @@ class CartController extends Controller
         return response()->json(
             ItemResource::make
             (
-                Item::query()
+                Item::with(["user", "product"])
                     ->where('user_id', $request->user('user')->id)
                     ->findOrFail($id)
             )
@@ -99,7 +102,16 @@ class CartController extends Controller
         $total = 0;
         foreach ($request->user('user')->items as $item) {
             $items[] = ItemResource::make($item);
-            $total += $item->quantity * $item->price;
+            $product = $item->product;
+            var_dump($product->price, $item->quantity, $product->discount);
+            $total += $product->price * $item->quantity * (100 - $product->discount) / 100;
+            if ($product->stock < $item->quantity) {
+                return response()->json(["error" => "Insufficient stock"]);
+            }
+            $product->stock -= $item->quantity;
+            $product->save();
+        }
+        foreach ($request->user('user')->items as $item) {
             $item->delete();
         }
         if ($total < Config::query()->firstWhere('key', "transit-fee-max")->value) {

@@ -51,7 +51,7 @@ class CategoryController extends Controller
 
     public function show($id): JsonResponse
     {
-        return response()->json(CategoryResource::make(Category::query()->findOrFail($id)));
+        return response()->json(CategoryResource::make(Category::with(["products", "parent", "children"])->findOrFail($id)));
     }
 
     public function edit(Request $request, $id): JsonResponse

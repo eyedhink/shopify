@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ItemResource;
 use App\Http\Resources\OrderResource;
+use App\Models\Config;
 use App\Models\Item;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use App\Services\Utils;
 use Illuminate\Http\JsonResponse;
@@ -20,7 +22,7 @@ class OrderController extends Controller
             return Utils::automatedPaginationWithBuilder
             (
                 $request,
-                Order::with(["user"])
+                Order::with(["user", "address"])
                     ->where("user_id", $request->user('user')->id),
                 OrderResource::class
             );
@@ -28,7 +30,7 @@ class OrderController extends Controller
             return Utils::automatedPaginationWithBuilder
             (
                 $request,
-                Order::with(["user"]),
+                Order::with(["user", "address"]),
                 OrderResource::class
             );
         } else {
@@ -42,7 +44,7 @@ class OrderController extends Controller
             return response()->json(
                 OrderResource::make
                 (
-                    Order::with(["user"])
+                    Order::with(["user", "address"])
                         ->where('user_id', $request->user('user')->id)
                         ->findOrFail($id)
                 )
@@ -51,7 +53,7 @@ class OrderController extends Controller
             return response()->json(
                 OrderResource::make
                 (
-                    Order::with(["user"])
+                    Order::with(["user", "address"])
                         ->findOrFail($id)
                 )
             );
@@ -60,13 +62,13 @@ class OrderController extends Controller
         }
     }
 
-    public function pay(Request $request): JsonResponse
+    public function pay(Request $request, $id): JsonResponse
     {
         $user = User::query()->findOrFail($request->user('user')->id);
-        $validated = $request->validate([
-            'order_id' => ['required', 'exists:orders,id'],
-        ]);
-        $order = Order::query()->findOrFail($validated['order_id']);
+        $order = Order::query()->findOrFail($id);
+        if (!$order) {
+            return response()->json(["error" => "Order not found"]);
+        }
         if ($order->user_id != $user->id) {
             return response()->json(["error" => "Unauthorized"]);
         }
@@ -130,7 +132,10 @@ class OrderController extends Controller
     public function destroy(Request $request, $id): JsonResponse
     {
         $order = Order::withTrashed()->findOrFail($id);
-        if (!Utils::isAuthorized($request->user('admin'), "order-force-delete")) {
+        if (Auth::guard('user')->check() && $order->user_id != $request->user('user')->id) {
+            return response()->json(["error" => "Unauthorized"]);
+        }
+        if (Auth::guard('admin')->check() && !Utils::isAuthorized($request->user('admin'), "order-force-delete")) {
             return response()->json(["error" => "Unauthorized"]);
         }
         $order->forceDelete();
@@ -152,12 +157,16 @@ class OrderController extends Controller
         $items = [];
         $total = 0;
         foreach ($validated["items"] as $item) {
+            $product = Product::query()->findOrFail($item["product_id"]);
             $items[] = ItemResource::make(Item::query()->create([
                 "user_id" => $validated["user_id"],
                 "product_id" => $item["product_id"],
                 "quantity" => $item["quantity"],
             ]));
-            $total += $item["quantity"] * $item["price"];
+            $total += $product->price * $item["quantity"] * (100 - $product->discount) / 100;
+            if ($total < Config::query()->firstWhere('key', "transit-fee-max")->value) {
+                $total += Config::query()->firstWhere('key', "transit-fee")->value;
+            }
         }
         Order::query()->create([
             "user_id" => $validated["user_id"],

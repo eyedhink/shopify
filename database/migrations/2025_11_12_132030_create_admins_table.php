@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('password');
             $table->boolean('is_main_admin')->default(false);
             $table->json('abilities');
-            $table->string('database')->nullable();
+            $table->string('database')->default('shopify-1');
             $table->timestamps();
         });
     }

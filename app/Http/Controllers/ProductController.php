@@ -29,8 +29,9 @@ class ProductController extends Controller
             'seo_keywords' => ['required', 'array'],
             'seo_keywords.*' => ['required', 'string'],
             'description' => ['required', 'string'],
-            'price' => ['required', 'decimal', 'min:1'],
-            'discount' => ['nullable', 'decimal', 'min:0'],
+            'price' => ['required', 'numeric', 'min:1'],
+            'stock' => ['nullable', 'integer', 'min:0'],
+            'discount' => ['nullable', 'numeric', 'min:0'],
         ]);
         $category = Category::query()->findOrFail($validated['category_id']);
         if (!isset($category->parent_id)) {

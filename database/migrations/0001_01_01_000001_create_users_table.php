@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('password');
             $table->bigInteger('credits')->default(0);
             $table->string("phone")->nullable();
+            $table->string('database')->default('shopify-1');
             $table->timestamps();
         });
     }

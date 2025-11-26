@@ -35,7 +35,7 @@ class TicketController extends Controller
             return Utils::automatedPaginationWithBuilder
             (
                 $request,
-                Ticket::with('user')
+                Ticket::with(['user', 'messages'])
                     ->where('user_id', $request->user('user')->id),
                 TicketResource::class
             );
@@ -43,7 +43,7 @@ class TicketController extends Controller
             return Utils::automatedPaginationWithBuilder
             (
                 $request,
-                Ticket::with('user'),
+                Ticket::with(['user', 'messages']),
                 TicketResource::class
             );
         } else {
@@ -57,7 +57,7 @@ class TicketController extends Controller
             return response()->json(
                 TicketResource::make
                 (
-                    Ticket::query()
+                    Ticket::with(['user', 'messages'])
                         ->where('user_id', $request->user('user')->id)
                         ->findOrFail($id)
                 )
@@ -66,7 +66,7 @@ class TicketController extends Controller
             return response()->json(
                 TicketResource::make
                 (
-                    Ticket::query()
+                    Ticket::with(['user', 'messages'])
                         ->findOrFail($id)
                 )
             );

@@ -2,7 +2,6 @@
 
 namespace App\Utils\Traits;
 
-use App\Models\Admin;
 use DateTimeInterface;
 use GeoSot\EnvEditor\EnvEditor;
 use GeoSot\EnvEditor\Exceptions\EnvException;
@@ -34,9 +33,9 @@ trait CustomHasApiTokens
             $editor->editKey("DB_DATABASE", $name);
             $tokenModel = PersonalAccessToken::query()->find(explode("|", $token->plainTextToken)[0]);
             if ($tokenModel !== null) {
-                $admin = Admin::query()->find(($tokenModel['tokenable_id']));
-                if ($admin !== null) {
-                    $db = $admin['database'];
+                $model = $tokenModel['tokenable']::query()->find(($tokenModel['tokenable_id']));
+                if ($model !== null) {
+                    $db = $model['database'];
                     $token->plainTextToken = hash('sha256', $db) . "|" . explode("|", $token->plainTextToken)[1];
                     return $token;
                 }

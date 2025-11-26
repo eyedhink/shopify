@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Utils\Traits\CustomHasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
@@ -9,13 +10,14 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Model
 {
-    use HasApiTokens, Notifiable;
+    use CustomHasApiTokens, Notifiable;
 
     protected $fillable = [
         'name',
         'password',
         'credits',
-        'phone'
+        'phone',
+        'database'
     ];
 
     protected $casts = [

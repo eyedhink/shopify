@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Services\Utils;
+use GeoSot\EnvEditor\EnvEditor;
 use GeoSot\EnvEditor\Exceptions\EnvException;
+use Illuminate\Config\Repository;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use PDO;
 
 class AdminController extends Controller
 {
@@ -23,16 +27,28 @@ class AdminController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $admin = Admin::query()->firstWhere('name', $validated['name']);
+        $editor = new EnvEditor(new Repository(), new Filesystem());
+        $pdo = new PDO("sqlite:D:\programming\PHP\shopify\database\db.sqlite");
+        $stmt = $pdo->query("SELECT name FROM `databases`");
+        foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $name) {
+            $editor->editKey('DB_DATABASE', $name);
 
-        if (!$admin || !Hash::check($validated['password'], $admin->password)) {
-            throw ValidationException::withMessages([
-                'name' => ['The provided credentials are incorrect.'],
+            $admin = Admin::query()->firstWhere('name', $validated['name']);
+
+            if (!$admin) {
+                continue;
+            }
+
+            if (!Hash::check($validated['password'], $admin->password)) {
+                continue;
+            }
+
+            return response()->json([
+                'token' => $admin->createToken('admin-token', $request)->plainTextToken
             ]);
         }
-
-        return response()->json([
-            'token' => $admin->createToken('admin-token', $request)->plainTextToken
+        throw ValidationException::withMessages([
+            'name' => ['The provided credentials are incorrect.'],
         ]);
     }
 
@@ -47,6 +63,10 @@ class AdminController extends Controller
             'abilities' => ['required', 'array'],
             'abilities.*' => ['required', 'string', 'max:255'],
         ]);
+
+        $editor = new EnvEditor(new Repository(), new Filesystem());
+
+        $validated['database'] = $editor->getKey('DB_DATABASE');
 
         Admin::query()->create($validated);
 

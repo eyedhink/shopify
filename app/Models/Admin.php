@@ -15,6 +15,7 @@ class Admin extends Model
         'password',
         'is_main_admin',
         'abilities',
+        'database',
     ];
 
     protected $casts = [
