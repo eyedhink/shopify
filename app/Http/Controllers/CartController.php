@@ -8,7 +8,8 @@ use App\Models\Config;
 use App\Models\Item;
 use App\Models\Order;
 use App\Models\Product;
-use App\Services\Utils;
+use App\Utils\Controllers\Controller;
+use App\Utils\Functions\FunctionUtils;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -52,7 +53,7 @@ class CartController extends Controller
 
     function index(Request $request): JsonResponse
     {
-        return Utils::automatedPaginationWithBuilder
+        return FunctionUtils::automatedPaginationWithBuilder
         (
             $request,
             Item::with(["user", "product"])

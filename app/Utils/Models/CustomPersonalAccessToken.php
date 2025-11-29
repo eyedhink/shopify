@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Utils\Models;
 
 use GeoSot\EnvEditor\EnvEditor;
 use GeoSot\EnvEditor\Exceptions\EnvException;
@@ -23,8 +23,8 @@ class CustomPersonalAccessToken extends PersonalAccessToken
         $db = explode("|", explode("Bearer ", $request->header('Authorization'))[1])[0];
         $pdo = new PDO("sqlite:D:\programming\PHP\shopify\database\db.sqlite");
         $stmt = $pdo->query("SELECT name FROM `databases`");
-        foreach($stmt->fetchAll(PDO::FETCH_COLUMN) as $name) {
-            if(hash('sha256', $name) == $db) {
+        foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $name) {
+            if (hash('sha256', $name) == $db) {
                 $editor->editKey('DB_DATABASE', $name);
             }
         }
@@ -39,3 +39,4 @@ class CustomPersonalAccessToken extends PersonalAccessToken
         return static::query()->where('token', $token)->first();
     }
 }
+

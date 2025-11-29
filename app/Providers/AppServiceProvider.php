@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\CustomPersonalAccessToken;
-use App\Services\Utils;
+use App\Utils\Functions\FunctionUtils;
+use App\Utils\Models\CustomPersonalAccessToken;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 
@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Sanctum::usePersonalAccessTokenModel(CustomPersonalAccessToken::class);
         Sanctum::getAccessTokenFromRequestUsing(function ($tok) {
-            return Utils::getTokenFromRequest($tok);
+            return FunctionUtils::getTokenFromRequest($tok);
         });
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace App\Utils\Functions;
 
-use App\Http\Resources\BaseResource;
 use App\Models\Admin;
-use App\Models\CustomPersonalAccessToken;
+use App\Utils\Models\CustomPersonalAccessToken;
+use App\Utils\Resources\BaseResource;
 use GeoSot\EnvEditor\Exceptions\EnvException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class Utils
+class FunctionUtils
 {
     public static function validatePaginationRequest(Request $request): array
     {
@@ -64,7 +64,7 @@ class Utils
     {
         $limit = $validated['limit'] ?? 10;
         $models = $model::query()->paginate($limit, page: $validated['page']);
-        $pagination_info = Utils::makePaginationInfo($models, $validated, $limit);
+        $pagination_info = FunctionUtils::makePaginationInfo($models, $validated, $limit);
         return response()->json(["data" => $resource::collection($models), "pagination_info" => $pagination_info]);
     }
 
@@ -78,7 +78,7 @@ class Utils
      */
     public static function automatedPagination(Request $request, string $model, string $resource): JsonResponse
     {
-        return Utils::handlePagination(Utils::validatePaginationRequest($request), $model, $resource);
+        return FunctionUtils::handlePagination(FunctionUtils::validatePaginationRequest($request), $model, $resource);
     }
 
     /**
@@ -91,10 +91,10 @@ class Utils
      */
     public static function automatedPaginationWithBuilder(Request $request, Builder $query, string $resource): JsonResponse
     {
-        $validated = Utils::validatePaginationRequest($request);
+        $validated = FunctionUtils::validatePaginationRequest($request);
         $limit = $validated['limit'] ?? 10;
         $models = $query->paginate($limit, page: $validated['page']);
-        $pagination_info = Utils::makePaginationInfo($models, $validated, $limit);
+        $pagination_info = FunctionUtils::makePaginationInfo($models, $validated, $limit);
         return response()->json(["data" => $resource::collection($models), "pagination_info" => $pagination_info]);
     }
 

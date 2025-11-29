@@ -3,7 +3,7 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/app/Http/Controllers/AdminController.php" dialect="SQLite" />
     <file url="file://$PROJECT_DIR$/app/Http/Controllers/UserController.php" dialect="SQLite" />
-    <file url="file://$PROJECT_DIR$/app/Models/CustomPersonalAccessToken.php" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/app/Utils/Models/CustomPersonalAccessToken.php" dialect="SQLite" />
     <file url="file://$PROJECT_DIR$/app/Utils/Traits/CustomHasApiTokens.php" dialect="SQLite" />
   </component>
 </project>

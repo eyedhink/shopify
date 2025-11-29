@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use App\Services\Utils;
+use App\Utils\Controllers\Controller;
+use App\Utils\Functions\FunctionUtils;
 use GeoSot\EnvEditor\EnvEditor;
 use GeoSot\EnvEditor\Exceptions\EnvException;
 use Illuminate\Config\Repository;
@@ -86,7 +87,7 @@ class UserController extends Controller
 
         $validated['database'] = $editor->getKey('DB_DATABASE');
 
-        if (!Utils::isAuthorized($request->user('admin'), 'user-store')) {
+        if (!FunctionUtils::isAuthorized($request->user('admin'), 'user-store')) {
             return response()->json(["error" => "Unauthorized"]);
         }
         $user = User::query()->create($validated);
@@ -95,7 +96,7 @@ class UserController extends Controller
 
     function storeBunch(Request $request): JsonResponse
     {
-        if (!Utils::isAuthorized($request->user('admin'), 'user-store-bunch')) {
+        if (!FunctionUtils::isAuthorized($request->user('admin'), 'user-store-bunch')) {
             return response()->json(["error" => "Unauthorized"]);
         }
         $validated = $request->validate([
@@ -115,7 +116,7 @@ class UserController extends Controller
 
     function storeBunchExcel(Request $request): JsonResponse
     {
-        if (!Utils::isAuthorized($request->user('admin'), 'user-store-bunch')) {
+        if (!FunctionUtils::isAuthorized($request->user('admin'), 'user-store-bunch')) {
             return response()->json(["error" => "Unauthorized"]);
         }
 //        $validated = $request->validate([

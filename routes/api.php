@@ -8,6 +8,7 @@ use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+//use App\Http\Controllers\TestController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -24,12 +25,18 @@ Route::post("/user-login", [UserController::class, "login"]);
 Route::post("/user-register", [UserController::class, "register"]);
 Route::get("/user-does-exist", [UserController::class, "doesExist"]);
 
+//Route::post("/test-create", [TestController::class, "store"]);
+//Route::get("/test-index", [TestController::class, "index"]);
+//Route::get("/test-show/{id}", [TestController::class, "show"]);
+//Route::put("/test-update/{id}", [TestController::class, "edit"]);
+//Route::delete("/test-destroy/{id}", [TestController::class, "destroy"]);
+
 Route::middleware('auth:user')->group(function () {
     Route::post("/address-store", [AddressController::class, "store"]);
     Route::get("/address-index", [AddressController::class, "index"]);
-    Route::get("/address-show/{id}", [AddressController::class, "show"]);
-    Route::put("/address-edit/{id}", [AddressController::class, "edit"]);
-    Route::delete("/address-delete/{id}", [AddressController::class, "delete"]);
+    Route::get("/address-show/{kw}", [AddressController::class, "show"]);
+    Route::put("/address-edit/{kw}", [AddressController::class, "edit"]);
+    Route::delete("/address-delete/{kw}", [AddressController::class, "destroy"]);
 
     Route::post("/cart-store", [CartController::class, "store"]);
     Route::get("/cart-index", [CartController::class, "index"]);
@@ -68,9 +75,9 @@ Route::middleware('auth:admin')->group(function () {
 
     Route::post("/config-store", [ConfigController::class, "store"]);
     Route::get("/config-index", [ConfigController::class, "index"]);
-    Route::get("/config-show/{id}", [ConfigController::class, "show"]);
-    Route::put("/config-edit/{key}", [ConfigController::class, "edit"]);
-    Route::delete("/config-delete/{id}", [ConfigController::class, "destroy"]);
+    Route::get("/config-show/{kw}", [ConfigController::class, "show"]);
+    Route::put("/config-edit/{kw}", [ConfigController::class, "edit"]);
+    Route::delete("/config-delete/{kw}", [ConfigController::class, "destroy"]);
 
     Route::post("/message-store-admin", [MessageController::class, "store"]);
     Route::get("/message-index-admin", [MessageController::class, "index"]);

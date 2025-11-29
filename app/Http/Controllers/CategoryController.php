@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
-use App\Services\Utils;
+use App\Utils\Controllers\Controller;
+use App\Utils\Functions\FunctionUtils;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class CategoryController extends Controller
 {
     public function store(Request $request): JsonResponse
     {
-        if (!Utils::isAuthorized($request->user('admin'), 'category-store')) {
+        if (!FunctionUtils::isAuthorized($request->user('admin'), 'category-store')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         $validated = $request->validate([
@@ -46,7 +47,7 @@ class CategoryController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        return Utils::automatedPaginationWithBuilder($request, Category::with(["products", "parent", "children"]), CategoryResource::class);
+        return FunctionUtils::automatedPaginationWithBuilder($request, Category::with(["products", "parent", "children"]), CategoryResource::class);
     }
 
     public function show($id): JsonResponse
@@ -56,7 +57,7 @@ class CategoryController extends Controller
 
     public function edit(Request $request, $id): JsonResponse
     {
-        if (!Utils::isAuthorized($request->user('admin'), 'category-edit')) {
+        if (!FunctionUtils::isAuthorized($request->user('admin'), 'category-edit')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         $validated = $request->validate([
@@ -95,7 +96,7 @@ class CategoryController extends Controller
 
     public function delete(Request $request, $id): JsonResponse
     {
-        if (!Utils::isAuthorized($request->user('admin'), 'category-delete')) {
+        if (!FunctionUtils::isAuthorized($request->user('admin'), 'category-delete')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         Category::query()->findOrFail($id)->delete();
@@ -105,7 +106,7 @@ class CategoryController extends Controller
 
     public function restore(Request $request, $id): JsonResponse
     {
-        if (!Utils::isAuthorized($request->user('admin'), 'category-restore')) {
+        if (!FunctionUtils::isAuthorized($request->user('admin'), 'category-restore')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         Category::withTrashed()->findOrFail($id)->restore();
@@ -115,7 +116,7 @@ class CategoryController extends Controller
 
     public function destroy(Request $request, $id): JsonResponse
     {
-        if (!Utils::isAuthorized($request->user('admin'), 'category-destroy')) {
+        if (!FunctionUtils::isAuthorized($request->user('admin'), 'category-destroy')) {
             return response()->json(["error" => "Unauthorized."]);
         }
         Category::withTrashed()->findOrFail($id)->forceDelete();

@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Resources\MessageResource;
 use App\Models\Message;
 use App\Models\Ticket;
-use App\Services\Utils;
+use App\Utils\Controllers\Controller;
+use App\Utils\Functions\FunctionUtils;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,7 @@ class MessageController extends Controller
         }
         if (Auth::guard('admin')->check()) {
             $validated['admin_id'] = $request->user('admin')->id;
-            if (!Utils::isAuthorized($request->user('admin'), 'message-store')) {
+            if (!FunctionUtils::isAuthorized($request->user('admin'), 'message-store')) {
                 return response()->json(["error" => "Unauthorized."]);
             }
         }
@@ -50,11 +51,11 @@ class MessageController extends Controller
             }
         }
         if (Auth::guard('admin')->check()) {
-            if (!Utils::isAuthorized($request->user('admin'), 'message-index')) {
+            if (!FunctionUtils::isAuthorized($request->user('admin'), 'message-index')) {
                 return response()->json(["error" => "Unauthorized."]);
             }
         }
-        return Utils::automatedPaginationWithBuilder
+        return FunctionUtils::automatedPaginationWithBuilder
         (
             $request,
             Message::with(['user', 'admin', 'ticket'])
@@ -73,7 +74,7 @@ class MessageController extends Controller
             }
         }
         if (Auth::guard('admin')->check()) {
-            if (!Utils::isAuthorized($request->user('admin'), 'message-show')) {
+            if (!FunctionUtils::isAuthorized($request->user('admin'), 'message-show')) {
                 return response()->json(["error" => "Unauthorized."]);
             }
         }
@@ -94,7 +95,7 @@ class MessageController extends Controller
             }
         }
         if (Auth::guard('admin')->check()) {
-            if (($message->admin_id != $request->user('admin')->id) || !Utils::isAuthorized($request->user('admin'), 'message-edit')) {
+            if (($message->admin_id != $request->user('admin')->id) || !FunctionUtils::isAuthorized($request->user('admin'), 'message-edit')) {
                 return response()->json(["error" => "You are not allowed to edit messages on this ticket."]);
             }
         }
@@ -114,7 +115,7 @@ class MessageController extends Controller
             }
         }
         if (Auth::guard('admin')->check()) {
-            if (($message->admin_id != $request->user('admin')->id || !Utils::isAuthorized($request->user('admin'), 'message-delete'))) {
+            if (($message->admin_id != $request->user('admin')->id || !FunctionUtils::isAuthorized($request->user('admin'), 'message-delete'))) {
                 return response()->json(["error" => "You are not allowed to delete messages on this ticket."]);
             }
         }

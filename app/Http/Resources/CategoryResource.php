@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Utils\Resources\BaseResource;
 use Illuminate\Http\Request;
 
 class CategoryResource extends BaseResource
