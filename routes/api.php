@@ -61,7 +61,6 @@ Route::middleware('auth:user')->group(function () {
     Route::put("/ticket-edit/{id}", [TicketController::class, "edit"]);
     Route::delete("/ticket-delete/{id}", [TicketController::class, "delete"]);
     Route::delete("/ticket-restore/{id}", [TicketController::class, "restore"]);
-    Route::delete("/ticket-force-delete/{id}", [TicketController::class, "destroy"]);
 });
 
 Route::middleware('auth:admin')->group(function () {
@@ -71,7 +70,6 @@ Route::middleware('auth:admin')->group(function () {
     Route::put("/category-edit/{id}", [CategoryController::class, "edit"]);
     Route::delete("/category-delete/{id}", [CategoryController::class, "delete"]);
     Route::delete("/category-restore/{id}", [CategoryController::class, "restore"]);
-    Route::delete("/category-force-delete/{id}", [CategoryController::class, "destroy"]);
 
     Route::post("/config-store", [ConfigController::class, "store"]);
     Route::get("/config-index", [ConfigController::class, "index"]);
@@ -90,21 +88,18 @@ Route::middleware('auth:admin')->group(function () {
     Route::put("/order-update-status/{id}", [OrderController::class, "updateStatus"]);
     Route::delete("/order-delete/{id}", [OrderController::class, "delete"]);
     Route::delete("/order-restore/{id}", [OrderController::class, "restore"]);
-    Route::delete("/order-force-delete/{id}", [OrderController::class, "destroy"]);
     Route::post("/order-manual-store", [OrderController::class, "store"]);
 
     Route::post("/product-create", [ProductController::class, "store"]);
     Route::post("/product-edit/{id}", [ProductController::class, "edit"]);
     Route::delete("/product-delete/{id}", [ProductController::class, "delete"]);
     Route::delete("/product-restore/{id}", [ProductController::class, "restore"]);
-    Route::delete("/product-force-delete/{id}", [ProductController::class, "destroy"]);
 
     Route::get("/ticket-index-admin", [TicketController::class, "index"]);
     Route::get("/ticket-show-admin/{id}", [TicketController::class, "show"]);
     Route::put("/ticket-edit-admin/{id}", [TicketController::class, "edit"]);
     Route::delete("/ticket-delete-admin/{id}", [TicketController::class, "delete"]);
     Route::delete("/ticket-restore-admin/{id}", [TicketController::class, "restore"]);
-    Route::delete("/ticket-force-delete-admin/{id}", [TicketController::class, "destroy"]);
 
     Route::post("/user-store", [UserController::class, "store"]);
     Route::post("/user-store-bunch", [UserController::class, "storeBunch"]);

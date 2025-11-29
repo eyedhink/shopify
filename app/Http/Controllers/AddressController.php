@@ -21,7 +21,7 @@ class AddressController extends BaseController
             ],
             validation_extensions: [
                 'store' => [
-                    'user_id' => fn(Request $request) => $request->user('user')->id,
+                    'user_id' => fn(Request $request, array $validated) => $request->user('user')->id,
                 ]
             ],
             selection_query: fn(Request $request): Builder => Address::with(['user'])->where('user_id', $request->user('user')->id),
