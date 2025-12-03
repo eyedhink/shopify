@@ -20,6 +20,9 @@ class MessageControllerAdmin extends BaseController
                 'content' => ['required', 'string'],
                 'ticket_id' => ['required', 'integer', 'exists:tickets,id'],
             ],
+            validation_index: [
+                'ticket_id' => ['required', 'integer', 'exists:tickets,id'],
+            ],
             validation_update: [
                 'content' => ['required', 'string'],
             ],
@@ -32,9 +35,6 @@ class MessageControllerAdmin extends BaseController
                 ]
             ],
             selection_query: fn(Request $request): Builder => Message::with(['admin', 'ticket'])->where('admin_id', $request->user('admin')->id),
-            validation_index: [
-                'ticket_id' => ['required', 'integer', 'exists:tickets,id'],
-            ],
             selection_query_blacklist: [
                 'index',
                 'show'

@@ -21,6 +21,9 @@ class MessageController extends BaseController
                 'content' => ['required', 'string'],
                 'ticket_id' => ['required', 'integer', 'exists:tickets,id'],
             ],
+            validation_index: [
+                'ticket_id' => ['required', 'integer', 'exists:tickets,id'],
+            ],
             validation_update: [
                 'content' => ['required', 'string'],
             ],
@@ -33,19 +36,16 @@ class MessageController extends BaseController
                 ]
             ],
             selection_query: fn(Request $request): Builder => Message::with(['user', 'ticket'])->where('user_id', $request->user('user')->id),
-            match_ids: [
-                'store' => ['user_id', 'ticket_id', Ticket::class],
-                'index' => ['user_id', 'ticket_id', Ticket::class],
-            ],
-            validation_index: [
-                'ticket_id' => ['required', 'integer', 'exists:tickets,id'],
-            ],
             selection_query_blacklist: [
                 'index'
             ],
             selection_query_replace: [
                 'index' => fn(Request $request, array $validated): Builder => Message::with(['user', 'ticket'])
                     ->where('ticket_id', $validated['ticket_id']),
+            ],
+            match_ids: [
+                'store' => ['user_id', 'ticket_id', Ticket::class],
+                'index' => ['user_id', 'ticket_id', Ticket::class],
             ]
         );
     }
