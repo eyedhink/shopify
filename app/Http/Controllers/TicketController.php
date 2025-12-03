@@ -4,12 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
-use App\Models\User;
 use App\Utils\Controllers\Controller;
 use App\Utils\Functions\FunctionUtils;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class TicketController extends Controller
 {
@@ -32,67 +30,72 @@ class TicketController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        if (Auth::guard('user')->check()) {
-            return FunctionUtils::automatedPaginationWithBuilder
-            (
-                $request,
-                Ticket::with(['user', 'messages'])
-                    ->where('user_id', $request->user('user')->id),
-                TicketResource::class
-            );
-        } else if (Auth::guard('admin')->check() && FunctionUtils::isAuthorized($request->user('admin'), 'ticket-index')) {
-            return FunctionUtils::automatedPaginationWithBuilder
-            (
-                $request,
-                Ticket::with(['user', 'messages']),
-                TicketResource::class
-            );
-        } else {
-            return response()->json(["error" => "Unauthorized"]);
-        }
+        return FunctionUtils::automatedPaginationWithBuilder
+        (
+            $request,
+            Ticket::with(['user', 'messages'])
+                ->where('user_id', $request->user('user')->id),
+            TicketResource::class
+        );
+    }
+
+    public function indexAdmin(Request $request): JsonResponse
+    {
+        return FunctionUtils::automatedPaginationWithBuilder
+        (
+            $request,
+            Ticket::with(['user', 'messages']),
+            TicketResource::class
+        );
     }
 
     public function show(Request $request, $id): JsonResponse
     {
-        if (Auth::guard('user')->check()) {
-            return response()->json(
-                TicketResource::make
-                (
-                    Ticket::with(['user', 'messages'])
-                        ->where('user_id', $request->user('user')->id)
-                        ->findOrFail($id)
-                )
-            );
-        } else if (Auth::guard('admin')->check() && FunctionUtils::isAuthorized($request->user('admin'), 'ticket-show')) {
-            return response()->json(
-                TicketResource::make
-                (
-                    Ticket::with(['user', 'messages'])
-                        ->findOrFail($id)
-                )
-            );
-        } else {
-            return response()->json(["error" => "Unauthorized"]);
-        }
+        return response()->json(
+            TicketResource::make
+            (
+                Ticket::with(['user', 'messages'])
+                    ->where('user_id', $request->user('user')->id)
+                    ->findOrFail($id)
+            )
+        );
+    }
+
+    public function showAdmin($id): JsonResponse
+    {
+        return response()->json(
+            TicketResource::make
+            (
+                Ticket::with(['user', 'messages'])
+                    ->findOrFail($id)
+            )
+        );
     }
 
     public function edit(Request $request, $id): JsonResponse
     {
         $validated = $request->validate([
-            'title' => ['sometimes', 'string'],
-            'content' => ['sometimes', 'string'],
+            'title' => ['nullable', 'string'],
+            'content' => ['nullable', 'string'],
         ]);
 
-        $ticket = Ticket::query()->findOrFail($id);
+        $ticket = Ticket::query()->where('user_id', $request->user('user')->id)->findOrFail($id);
 
-        if (Auth::guard('admin')->check() && !FunctionUtils::isAuthorized($request->user('admin'), 'ticket-edit')) {
-            return response()->json(['error' => 'Unauthorized']);
-        } else if (Auth::guard('user')->check()) {
-            $user = User::query()->findOrFail($request->user('user')->id);
-            if ($user->id != $ticket->user_id) {
-                return response()->json(['error' => 'Unauthorized']);
-            }
+        if (!$ticket) {
+            return response()->json(["error" => "Unauthorized"]);
         }
+
+        $ticket->update($validated);
+
+        return response()->json(["message" => "Your ticket has been updated"]);
+    }
+
+    public function editAdmin($id, Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'title' => ['nullable', 'string'],
+            'content' => ['nullable', 'string'],
+        ]);
 
         Ticket::query()->findOrFail($id)->update($validated);
 
@@ -101,49 +104,48 @@ class TicketController extends Controller
 
     public function delete(Request $request, $id): JsonResponse
     {
-        $ticket = Ticket::query()->findOrFail($id);
+        $ticket = Ticket::query()->where('user_id', $request->user('user')->id)->findOrFail($id);
 
-        if (Auth::guard('admin')->check() && !FunctionUtils::isAuthorized($request->user('admin'), 'ticket-delete')) {
-            return response()->json(['error' => 'Unauthorized']);
-        } else if (Auth::guard('user')->check()) {
-            $user = User::query()->findOrFail($request->user('user')->id);
-            if ($user->id != $ticket->user_id) {
-                return response()->json(['error' => 'Unauthorized']);
-            }
+        if (!$ticket) {
+            return response()->json(["error" => "Unauthorized"]);
         }
 
         $ticket->delete();
         return response()->json(["message" => "Your ticket has been deleted"]);
     }
 
+    public function deleteAdmin($id): JsonResponse
+    {
+        $ticket = Ticket::query()->findOrFail($id);
+        $ticket->delete();
+        return response()->json(["message" => "Your ticket has been deleted"]);
+    }
+
     public function restore(Request $request, $id): JsonResponse
     {
-        $ticket = Ticket::withTrashed()->findOrFail($id);
+        $ticket = Ticket::withTrashed()->where('user_id', $request->user('user')->id)->findOrFail($id);
 
-        if (Auth::guard('admin')->check() && !FunctionUtils::isAuthorized($request->user('admin'), 'ticket-restore')) {
-            return response()->json(['error' => 'Unauthorized']);
-        } else if (Auth::guard('user')->check()) {
-            $user = User::query()->findOrFail($request->user('user')->id);
-            if ($user->id != $ticket->user_id) {
-                return response()->json(['error' => 'Unauthorized']);
-            }
+        if (!$ticket) {
+            return response()->json(["error" => "Unauthorized"]);
         }
 
         $ticket->restore();
         return response()->json(["message" => "Your ticket has been restored"]);
     }
 
-    public function destroy(Request $request, $id): JsonResponse
+    public function restoreAdmin($id): JsonResponse
     {
         $ticket = Ticket::withTrashed()->findOrFail($id);
+        $ticket->restore();
+        return response()->json(["message" => "Your ticket has been restored"]);
+    }
 
-        if (Auth::guard('admin')->check() && !FunctionUtils::isAuthorized($request->user('admin'), 'ticket-force-delete')) {
-            return response()->json(['error' => 'Unauthorized']);
-        } else if (Auth::guard('user')->check()) {
-            $user = User::query()->findOrFail($request->user('user')->id);
-            if ($user->id != $ticket->user_id) {
-                return response()->json(['error' => 'Unauthorized']);
-            }
+    public function destroy(Request $request, $id): JsonResponse
+    {
+        $ticket = Ticket::withTrashed()->where('user_id', $request->user('user')->id)->findOrFail($id);
+
+        if (!$ticket) {
+            return response()->json(["error" => "Unauthorized"]);
         }
 
         $ticket->forceDelete();

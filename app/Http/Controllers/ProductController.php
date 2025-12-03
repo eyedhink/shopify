@@ -14,9 +14,6 @@ class ProductController extends Controller
 {
     public function store(Request $request): JsonResponse
     {
-        if (!FunctionUtils::isAuthorized($request->user('admin'), 'product-store')) {
-            return response()->json(["error" => "Unauthorized."]);
-        }
         $validated = $request->validate([
             'countable' => ['nullable', 'boolean'],
             'category_id' => ['required', 'exists:categories,id'],
@@ -68,24 +65,21 @@ class ProductController extends Controller
 
     public function edit(Request $request, $id): JsonResponse
     {
-        if (!FunctionUtils::isAuthorized($request->user('admin'), 'product-edit')) {
-            return response()->json(["error" => "Unauthorized."]);
-        }
         $validated = $request->validate([
             'countable' => ['nullable', 'boolean'],
-            'category_id' => ['sometimes', 'exists:categories,id'],
-            'name' => ['sometimes', 'string', 'max:255', 'unique:products'],
-            'primary_image' => ['sometimes', 'image', 'mimes:jpeg,png,jpg,gif,svg'],
-            'gallery' => ['sometimes', 'array'],
-            'gallery.*' => ['sometimes', 'image', 'mimes:jpeg,png,jpg,gif,svg'],
-            'english_name' => ['sometimes', 'string', 'max:255', 'unique:products'],
-            'seo_options' => ['sometimes', 'array'],
-            'seo_options.seo_title' => ['sometimes', 'string', 'max:255'],
-            'seo_options.seo_meta_description' => ['sometimes', 'string'],
-            'seo_options.seo_keywords' => ['sometimes', 'array'],
-            'seo_options.seo_keywords.*' => ['sometimes', 'string'],
-            'description' => ['sometimes', 'string'],
-            'price' => ['sometimes', 'decimal', 'min:1'],
+            'category_id' => ['nullable', 'exists:categories,id'],
+            'name' => ['nullable', 'string', 'max:255', 'unique:products'],
+            'primary_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg'],
+            'gallery' => ['nullable', 'array'],
+            'gallery.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg'],
+            'english_name' => ['nullable', 'string', 'max:255', 'unique:products'],
+            'seo_options' => ['nullable', 'array'],
+            'seo_options.seo_title' => ['nullable', 'string', 'max:255'],
+            'seo_options.seo_meta_description' => ['nullable', 'string'],
+            'seo_options.seo_keywords' => ['nullable', 'array'],
+            'seo_options.seo_keywords.*' => ['nullable', 'string'],
+            'description' => ['nullable', 'string'],
+            'price' => ['nullable', 'decimal', 'min:1'],
             'discount' => ['nullable', 'decimal', 'min:0'],
         ]);
         if (isset($validated['category_id'])) {
@@ -118,29 +112,20 @@ class ProductController extends Controller
         return response()->json(["message" => "Product updated"]);
     }
 
-    public function delete(Request $request, $id): JsonResponse
+    public function delete($id): JsonResponse
     {
-        if (!FunctionUtils::isAuthorized($request->user('admin'), 'product-delete')) {
-            return response()->json(["error" => "Unauthorized."]);
-        }
         Product::query()->findOrFail($id)->delete();
         return response()->json(["message" => "Product deleted"]);
     }
 
-    public function restore(Request $request, $id): JsonResponse
+    public function restore($id): JsonResponse
     {
-        if (!FunctionUtils::isAuthorized($request->user('admin'), 'product-restore')) {
-            return response()->json(["error" => "Unauthorized."]);
-        }
         Product::withTrashed()->findOrFail($id)->restore();
         return response()->json(["message" => "Product restored"]);
     }
 
-    public function destroy(Request $request, $id): JsonResponse
+    public function destroy($id): JsonResponse
     {
-        if (!FunctionUtils::isAuthorized($request->user('admin'), 'product-destroy')) {
-            return response()->json(["error" => "Unauthorized."]);
-        }
         Product::withTrashed()->findOrFail($id)->forceDelete();
         return response()->json(["message" => "Product deleted"]);
     }

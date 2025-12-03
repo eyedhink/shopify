@@ -16,12 +16,11 @@ class CategoryController extends BaseController
             model: Category::class,
             resource: CategoryResource::class,
             loadRelations: ['parent', 'children', 'products'],
-            ability_system: true,
             ability_prefix: 'category',
             ability_system_blacklist: ['index', 'show'],
             validation: [
                 'name' => ['required', 'string', 'unique:categories,name', 'max:255'],
-                'parent_id' => ['sometimes', 'exists:categories,id'],
+                'parent_id' => ['nullable', 'exists:categories,id'],
                 'seo_title' => ['required', 'string', 'max:255'],
                 'seo_meta_description' => ['required', 'string'],
                 'seo_keywords' => ['required', 'array'],

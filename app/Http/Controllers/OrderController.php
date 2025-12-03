@@ -13,54 +13,51 @@ use App\Utils\Controllers\Controller;
 use App\Utils\Functions\FunctionUtils;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        if (Auth::guard('user')->check()) {
-            return FunctionUtils::automatedPaginationWithBuilder
-            (
-                $request,
-                Order::with(["user", "address"])
-                    ->where("user_id", $request->user('user')->id),
-                OrderResource::class
-            );
-        } else if (Auth::guard('admin')->check() && FunctionUtils::isAuthorized($request->user('admin'), "order-index")) {
-            return FunctionUtils::automatedPaginationWithBuilder
-            (
-                $request,
-                Order::with(["user", "address"]),
-                OrderResource::class
-            );
-        } else {
-            return response()->json(["error" => "Unauthorized"]);
-        }
+        return FunctionUtils::automatedPaginationWithBuilder
+        (
+            $request,
+            Order::with(["user", "address"])
+                ->where("user_id", $request->user('user')->id),
+            OrderResource::class
+        );
+    }
+
+    public function indexAdmin(Request $request): JsonResponse
+    {
+        return FunctionUtils::automatedPaginationWithBuilder
+        (
+            $request,
+            Order::with(["user", "address"]),
+            OrderResource::class
+        );
     }
 
     public function show(Request $request, $id): JsonResponse
     {
-        if (Auth::guard('user')->check()) {
-            return response()->json(
-                OrderResource::make
-                (
-                    Order::with(["user", "address"])
-                        ->where('user_id', $request->user('user')->id)
-                        ->findOrFail($id)
-                )
-            );
-        } else if (Auth::guard('admin')->check() && FunctionUtils::isAuthorized($request->user('admin'), "order-show")) {
-            return response()->json(
-                OrderResource::make
-                (
-                    Order::with(["user", "address"])
-                        ->findOrFail($id)
-                )
-            );
-        } else {
-            return response()->json(["error" => "Unauthorized"]);
-        }
+        return response()->json(
+            OrderResource::make
+            (
+                Order::with(["user", "address"])
+                    ->where('user_id', $request->user('user')->id)
+                    ->findOrFail($id)
+            )
+        );
+    }
+
+    public function showAdmin($id): JsonResponse
+    {
+        return response()->json(
+            OrderResource::make
+            (
+                Order::with(["user", "address"])
+                    ->findOrFail($id)
+            )
+        );
     }
 
     public function pay(Request $request, $id): JsonResponse
@@ -92,9 +89,6 @@ class OrderController extends Controller
         $validated = $request->validate([
             "status" => ['required', 'string', 'in:processing,sending,completed'],
         ]);
-        if (!FunctionUtils::isAuthorized($request->user('admin'), "order-update-status")) {
-            return response()->json(["error" => "Unauthorized"]);
-        }
         if ($validated['status'] === "processing" && $order->status !== "pending confirmation") {
             return response()->json(["error" => "Invalid status."]);
         }
@@ -108,22 +102,16 @@ class OrderController extends Controller
         return response()->json(["message" => "Order status updated"]);
     }
 
-    public function delete(Request $request, $id): JsonResponse
+    public function delete($id): JsonResponse
     {
         $order = Order::query()->findOrFail($id);
-        if (!FunctionUtils::isAuthorized($request->user('admin'), "order-delete")) {
-            return response()->json(["error" => "Unauthorized"]);
-        }
         $order->delete();
         return response()->json(["message" => "Order deleted"]);
     }
 
-    public function restore(Request $request, $id): JsonResponse
+    public function restore($id): JsonResponse
     {
         $order = Order::withTrashed()->findOrFail($id);
-        if (!FunctionUtils::isAuthorized($request->user('admin'), "order-restore")) {
-            return response()->json(["error" => "Unauthorized"]);
-        }
         $order->restore();
         $order->status = "pending payment";
         $order->save();
@@ -132,11 +120,8 @@ class OrderController extends Controller
 
     public function destroy(Request $request, $id): JsonResponse
     {
-        $order = Order::withTrashed()->findOrFail($id);
-        if (Auth::guard('user')->check() && $order->user_id != $request->user('user')->id) {
-            return response()->json(["error" => "Unauthorized"]);
-        }
-        if (Auth::guard('admin')->check() && !FunctionUtils::isAuthorized($request->user('admin'), "order-force-delete")) {
+        $order = Order::withTrashed()->where('user_id', $request->user('user')->id)->findOrFail($id);
+        if (!$order) {
             return response()->json(["error" => "Unauthorized"]);
         }
         $order->forceDelete();
@@ -152,9 +137,6 @@ class OrderController extends Controller
             "items.*.product_id" => ['required', 'integer', 'exists:products,id'],
             "items.*.quantity" => ['required', 'integer', 'min:1'],
         ]);
-        if (!FunctionUtils::isAuthorized($request->user('admin'), "order-store")) {
-            return response()->json(["error" => "Unauthorized"]);
-        }
         $items = [];
         $total = 0;
         foreach ($validated["items"] as $item) {

@@ -80,10 +80,10 @@ class CartController extends Controller
 
     function destroy(Request $request, $id): JsonResponse
     {
-        $item = Item::query()->findOrFail($id);
+        $item = Item::query()->where('user_id', $request->user('user')->id)->find($id);
 
-        if ($item->user_id != $request->user('user')->id) {
-            return response()->json(['error' => 'Not allowed to delete item']);
+        if (!$item) {
+            return response()->json(["error" => "Unauthorized"]);
         }
 
         $item->delete();
@@ -95,9 +95,9 @@ class CartController extends Controller
         $validated = $request->validate([
             'address_id' => ['required', 'integer', 'exists:addresses,id'],
         ]);
-        $address = Address::query()->findOrFail($validated['address_id']);
-        if ($address->user_id != $request->user('user')->id) {
-            return response()->json(['error' => 'Not allowed to use address']);
+        $address = Address::query()->where('user_id', $request->user('user')->id)->find($validated['address_id']);
+        if (!$address) {
+            return response()->json(["error" => "Unauthorized"]);
         }
         $items = [];
         $total = 0;

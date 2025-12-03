@@ -3,7 +3,6 @@
 namespace App\Utils\Controllers;
 
 use AllowDynamicProperties;
-use App\Models\Category;
 use App\Utils\Functions\FunctionUtils;
 use App\Utils\Resources\BaseResource;
 use http\Exception\UnexpectedValueException;
@@ -43,6 +42,7 @@ use Illuminate\Http\Request;
      * @param array $custom_kws
      * @param array $validation_extensions
      * @param (callable(Request $request): Builder)|null $selection_query
+     * @param (callable(Request $request): Builder)|null $selection_query_with_trashed
      * @template TResource of BaseResource
      */
     public function __construct
@@ -81,7 +81,7 @@ use Illuminate\Http\Request;
             foreach ($this->validation as $key => $value) {
                 $t = array_search("required", $value);
                 if (($t || $t === 0) && count($this->validation) > 1) {
-                    $value[$t] = "sometimes";
+                    $value[$t] = "nullable";
                 }
                 $validation_update[$key] = $value;
             }
@@ -90,6 +90,7 @@ use Illuminate\Http\Request;
         $this->custom_kws = $custom_kws;
         $this->validation_extensions = $validation_extensions;
         $this->selection_query = $selection_query != null ? fn(Request $request) => $selection_query($request) : null;
+        $this->selection_query_with_trashed = $selection_query_with_trashed != null ? fn(Request $request) => $selection_query_with_trashed($request) : null;
     }
 
     public function store(Request $request): JsonResponse
@@ -166,7 +167,7 @@ use Illuminate\Http\Request;
             throw new UnexpectedValueException('The model class must use the SoftDeletes trait.');
         }
         $custom_kw = array_search("restore", array_keys($this->custom_kws));
-        $query = $this->selection_query != null ? ($this->selection_query)($request) : $this->model::withTrashed();
+        $query = $this->selection_query_with_trashed != null ? ($this->selection_query_with_trashed)($request) : $this->model::withTrashed();
         $query->firstWhere(($custom_kw || $custom_kw === 0) ? $this->custom_kws["restore"] : "id", $kw)->restore();
         return response()->json(["message" => last(explode('\\', get_class(new $this->model()))) . " restored successfully"]);
     }
@@ -177,7 +178,7 @@ use Illuminate\Http\Request;
             return response()->json(["error" => "Unauthorized."]);
         }
         $custom_kw = array_search("destroy", array_keys($this->custom_kws));
-        $query = $this->selection_query != null ? ($this->selection_query)($request) : $this->model::query();
+        $query = $this->selection_query_with_trashed != null ? ($this->selection_query_with_trashed)($request) : ($this->selection_query != null ? ($this->selection_query)($request) : $this->model::query());
         $query->firstWhere(($custom_kw || $custom_kw === 0) ? $this->custom_kws["destroy"] : "id", $kw)->forceDelete();
         return response()->json(["message" => last(explode('\\', get_class(new $this->model()))) . " permanently deleted successfully"]);
     }

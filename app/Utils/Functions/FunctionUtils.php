@@ -18,7 +18,7 @@ class FunctionUtils
     {
         return $request->validate([
             'page' => ['required', 'integer', 'min:1'],
-            'limit' => ["sometimes", "integer", "min:1"],
+            'limit' => ["nullable", "integer", "min:1"],
         ]);
     }
 

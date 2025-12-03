@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use PDO;
+use function PHPUnit\Framework\isNull;
 
 class UserController extends Controller
 {
@@ -72,7 +73,8 @@ class UserController extends Controller
         $validated = $request->validate([
             'phone' => ['required', 'string'],
         ]);
-        return response()->json(User::query()->where('phone', $validated['phone'])->exists());
+        $user = User::query()->firstWhere('phone', $validated['phone']);
+        return response()->json(isNull($user));
     }
 
     function store(Request $request): JsonResponse
@@ -87,18 +89,12 @@ class UserController extends Controller
 
         $validated['database'] = $editor->getKey('DB_DATABASE');
 
-        if (!FunctionUtils::isAuthorized($request->user('admin'), 'user-store')) {
-            return response()->json(["error" => "Unauthorized"]);
-        }
         $user = User::query()->create($validated);
         return response()->json(UserResource::make($user));
     }
 
     function storeBunch(Request $request): JsonResponse
     {
-        if (!FunctionUtils::isAuthorized($request->user('admin'), 'user-store-bunch')) {
-            return response()->json(["error" => "Unauthorized"]);
-        }
         $validated = $request->validate([
             'users' => ['required', 'array'],
             'users.*.name' => ['required_with:users.*', 'string', 'unique:users,name'],
@@ -116,9 +112,6 @@ class UserController extends Controller
 
     function storeBunchExcel(Request $request): JsonResponse
     {
-        if (!FunctionUtils::isAuthorized($request->user('admin'), 'user-store-bunch')) {
-            return response()->json(["error" => "Unauthorized"]);
-        }
 //        $validated = $request->validate([
 //            'file' => ['required', 'file', 'mimes:xlsx']
 //        ]);

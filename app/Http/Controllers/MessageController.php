@@ -9,7 +9,6 @@ use App\Utils\Controllers\Controller;
 use App\Utils\Functions\FunctionUtils;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
@@ -19,21 +18,10 @@ class MessageController extends Controller
             'content' => ['required', 'string'],
             'ticket_id' => ['required', 'integer', 'exists:tickets,id'],
         ]);
-        if (Auth::guard('user')->check()) {
-            $validated['user_id'] = $request->user('user')->id;
-            $ticket = Ticket::query()->findOrFail($validated['ticket_id']);
-            if ($ticket->user_id != $request->user('user')->id) {
-                return response()->json(["error" => "You are not allowed to create messages on this ticket."]);
-            }
-        }
-        if (Auth::guard('admin')->check()) {
-            $validated['admin_id'] = $request->user('admin')->id;
-            if (!FunctionUtils::isAuthorized($request->user('admin'), 'message-store')) {
-                return response()->json(["error" => "Unauthorized."]);
-            }
-        }
-        if (!(isset($validated['admin_id']) || isset($validated['user_id']))) {
-            return response()->json(["errors" => ["Sender is required"]]);
+        $validated['user_id'] = $request->user('user')->id;
+        $ticket = Ticket::query()->where('user_id', $validated['user_id'])->find($validated['ticket_id']);
+        if (!$ticket) {
+            return response()->json(["error" => "Unauthorized"]);
         }
         Message::query()->create($validated);
         return response()->json(["message" => "Message sent"]);
@@ -44,16 +32,9 @@ class MessageController extends Controller
         $validated = $request->validate([
             'ticket_id' => ['required', 'integer', 'exists:tickets,id'],
         ]);
-        if (Auth::guard('user')->check()) {
-            $ticket = Ticket::query()->findOrFail($validated['ticket_id']);
-            if ($ticket->user_id != $request->user('user')->id) {
-                return response()->json(["error" => "You are not allowed to index messages on this ticket."]);
-            }
-        }
-        if (Auth::guard('admin')->check()) {
-            if (!FunctionUtils::isAuthorized($request->user('admin'), 'message-index')) {
-                return response()->json(["error" => "Unauthorized."]);
-            }
+        $ticket = Ticket::query()->where('user_id', $request->user('user')->id)->find($validated['ticket_id']);
+        if (!$ticket) {
+            return response()->json(["error" => "Unauthorized."]);
         }
         return FunctionUtils::automatedPaginationWithBuilder
         (
@@ -66,17 +47,9 @@ class MessageController extends Controller
 
     public function show(Request $request, $id): JsonResponse
     {
-        $message = Message::query()->findOrFail($id);
-        $ticket = $message->ticket;
-        if (Auth::guard('user')->check()) {
-            if ($ticket->user_id != $request->user('user')->id) {
-                return response()->json(["error" => "You are not allowed to show messages on this ticket."]);
-            }
-        }
-        if (Auth::guard('admin')->check()) {
-            if (!FunctionUtils::isAuthorized($request->user('admin'), 'message-show')) {
-                return response()->json(["error" => "Unauthorized."]);
-            }
+        $message = Message::query()->whereRelation('ticket', 'user_id', $request->user('user')->id)->find($id);
+        if (!$message) {
+            return response()->json(["error" => "Unauthorized."]);
         }
         return response()->json(MessageResource::make($message));
     }
@@ -87,17 +60,10 @@ class MessageController extends Controller
             'content' => ['required', 'string'],
         ]);
 
-        $message = Message::query()->findOrFail($id);
+        $message = Message::query()->where('user_id', $request->user('user')->id)->find($id);
 
-        if (Auth::guard('user')->check()) {
-            if ($message->user_id != $request->user('user')->id) {
-                return response()->json(["error" => "You are not allowed to edit messages on this ticket."]);
-            }
-        }
-        if (Auth::guard('admin')->check()) {
-            if (($message->admin_id != $request->user('admin')->id) || !FunctionUtils::isAuthorized($request->user('admin'), 'message-edit')) {
-                return response()->json(["error" => "You are not allowed to edit messages on this ticket."]);
-            }
+        if (!$message) {
+            return response()->json(["error" => "Unauthorized."]);
         }
 
         $message->update($validated);
@@ -105,21 +71,68 @@ class MessageController extends Controller
         return response()->json(["message" => "Message edited"]);
     }
 
+    public function editAdmin(Request $request, $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'content' => ['required', 'string'],
+        ]);
+        $message = Message::query()->where('admin_id', $request->user('admin')->id)->findOrFail($id);
+        if (!$message) {
+            return response()->json(["error" => "Unauthorized."]);
+        }
+        $message->update($validated);
+
+        return response()->json(["message" => "Message edited"]);
+    }
+
     public function destroy(Request $request, $id): JsonResponse
     {
-        $message = Message::query()->findOrFail($id);
-
-        if (Auth::guard('user')->check()) {
-            if ($message->user_id != $request->user('user')->id) {
-                return response()->json(["error" => "You are not allowed to delete messages on this ticket."]);
-            }
-        }
-        if (Auth::guard('admin')->check()) {
-            if (($message->admin_id != $request->user('admin')->id || !FunctionUtils::isAuthorized($request->user('admin'), 'message-delete'))) {
-                return response()->json(["error" => "You are not allowed to delete messages on this ticket."]);
-            }
+        $message = Message::query()->where('user_id', $request->user('user')->id)->findOrFail($id);
+        if (!$message) {
+            return response()->json(["error" => "Unauthorized."]);
         }
         $message->delete();
         return response()->json(["message" => "Message deleted"]);
+    }
+
+    public function storeAdmin(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'content' => ['required', 'string'],
+            'ticket_id' => ['required', 'integer', 'exists:tickets,id'],
+        ]);
+        $validated['admin_id'] = $request->user('admin')->id;
+        Message::query()->create($validated);
+        return response()->json(["message" => "Message sent"]);
+    }
+
+    public function destroyAdmin(Request $request, $id): JsonResponse
+    {
+        $message = Message::query()->where('admin_id', $request->user('admin')->id)->findOrFail($id);
+        if (!$message) {
+            return response()->json(["error" => "Unauthorized."]);
+        }
+        $message->delete();
+        return response()->json(["message" => "Message deleted"]);
+    }
+
+    public function indexAdmin(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'ticket_id' => ['required', 'integer', 'exists:tickets,id'],
+        ]);
+        return FunctionUtils::automatedPaginationWithBuilder
+        (
+            $request,
+            Message::with(['user', 'admin', 'ticket'])
+                ->where('ticket_id', $validated['ticket_id']),
+            MessageResource::class
+        );
+    }
+
+    public function showAdmin($id): JsonResponse
+    {
+        $message = Message::query()->findOrFail($id);
+        return response()->json(MessageResource::make($message));
     }
 }

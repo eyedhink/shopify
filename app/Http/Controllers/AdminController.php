@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Utils\Controllers\Controller;
-use App\Utils\Functions\FunctionUtils;
 use GeoSot\EnvEditor\EnvEditor;
 use GeoSot\EnvEditor\Exceptions\EnvException;
 use Illuminate\Config\Repository;
@@ -55,9 +54,6 @@ class AdminController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        if (!FunctionUtils::isAuthorized($request->user('admin'), 'admin-store')) {
-            return response()->json(["error" => "Unauthorized."]);
-        }
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:admins,name'],
             'password' => ['required', 'string'],
