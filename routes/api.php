@@ -10,6 +10,7 @@ use App\Http\Controllers\MessageControllerAdmin;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\TicketControllerAdmin;
 use App\Http\Controllers\UserController;
 use App\Utils\Middleware\AuthorizeAbility;
 use Illuminate\Support\Facades\Route;
@@ -52,10 +53,10 @@ Route::middleware('auth:user')->group(function () {
 
     Route::post("/ticket-store", [TicketController::class, "store"]);
     Route::get("/ticket-index", [TicketController::class, "index"]);
-    Route::get("/ticket-show/{id}", [TicketController::class, "show"]);
-    Route::put("/ticket-edit/{id}", [TicketController::class, "edit"]);
-    Route::delete("/ticket-delete/{id}", [TicketController::class, "delete"]);
-    Route::delete("/ticket-restore/{id}", [TicketController::class, "restore"]);
+    Route::get("/ticket-show/{kw}", [TicketController::class, "show"]);
+    Route::put("/ticket-edit/{kw}", [TicketController::class, "edit"]);
+    Route::delete("/ticket-delete/{kw}", [TicketController::class, "delete"]);
+    Route::delete("/ticket-restore/{kw}", [TicketController::class, "restore"]);
 });
 
 Route::middleware('auth:admin')->group(function () {
@@ -115,15 +116,15 @@ Route::middleware('auth:admin')->group(function () {
     Route::delete("/product-restore/{kw}", [ProductController::class, "restore"])
         ->middleware(AuthorizeAbility::class . ':product-restore');
 
-    Route::get("/ticket-index-admin", [TicketController::class, "indexAdmin"])
+    Route::get("/ticket-index-admin", [TicketControllerAdmin::class, "index"])
         ->middleware(AuthorizeAbility::class . ':ticket-index');
-    Route::get("/ticket-show-admin/{id}", [TicketController::class, "showAdmin"])
+    Route::get("/ticket-show-admin/{kw}", [TicketControllerAdmin::class, "show"])
         ->middleware(AuthorizeAbility::class . ':ticket-show');
-    Route::put("/ticket-edit-admin/{id}", [TicketController::class, "editAdmin"])
+    Route::put("/ticket-edit-admin/{kw}", [TicketControllerAdmin::class, "edit"])
         ->middleware(AuthorizeAbility::class . ':ticket-edit');
-    Route::delete("/ticket-delete-admin/{id}", [TicketController::class, "deleteAdmin"])
+    Route::delete("/ticket-delete-admin/{kw}", [TicketControllerAdmin::class, "delete"])
         ->middleware(AuthorizeAbility::class . ':ticket-delete');
-    Route::delete("/ticket-restore-admin/{id}", [TicketController::class, "restoreAdmin"])
+    Route::delete("/ticket-restore-admin/{kw}", [TicketControllerAdmin::class, "restore"])
         ->middleware(AuthorizeAbility::class . ':ticket-restore');
 
     Route::post("/user-store", [UserController::class, "store"])
