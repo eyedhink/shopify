@@ -26,6 +26,10 @@ use Illuminate\Http\Request;
     private array $validation_update;
     private array $custom_kws;
     private array $validation_extensions;
+    private array $match_ids;
+    private array $validation_index;
+    private array $selection_query_blacklist;
+    private array $selection_query_replace;
 
     /**
      * @template TModel of Model
@@ -43,6 +47,10 @@ use Illuminate\Http\Request;
      * @param array $validation_extensions
      * @param (callable(Request $request): Builder)|null $selection_query
      * @param (callable(Request $request): Builder)|null $selection_query_with_trashed
+     * @param array $match_ids
+     * @param array $validation_index
+     * @param array $selection_query_blacklist
+     * @param array $selection_query_replace
      * @template TResource of BaseResource
      */
     public function __construct
@@ -61,6 +69,10 @@ use Illuminate\Http\Request;
         array         $validation_extensions = [],
         callable|null $selection_query = null,
         callable|null $selection_query_with_trashed = null,
+        array         $match_ids = [],
+        array         $validation_index = [],
+        array         $selection_query_blacklist = [],
+        array         $selection_query_replace = [],
     )
     {
         $this->model = $model;
@@ -91,9 +103,14 @@ use Illuminate\Http\Request;
         $this->validation_extensions = $validation_extensions;
         $this->selection_query = $selection_query != null ? fn(Request $request) => $selection_query($request) : null;
         $this->selection_query_with_trashed = $selection_query_with_trashed != null ? fn(Request $request) => $selection_query_with_trashed($request) : null;
+        $this->match_ids = $match_ids;
+        $this->validation_index = $validation_index;
+        $this->selection_query_blacklist = $selection_query_blacklist;
+        $this->selection_query_replace = $selection_query_replace;
     }
 
-    public function store(Request $request): JsonResponse
+    public
+    function store(Request $request): JsonResponse
     {
         if ($this->ability_system && (!isset($this->ability_system_blacklist) || !array_search('store', $this->ability_system_blacklist)) && !FunctionUtils::isAuthorized($request->user($this->ability_guard), $this->ability_prefix . "-store")) {
             return response()->json(["error" => "Unauthorized."]);
@@ -105,30 +122,64 @@ use Illuminate\Http\Request;
                 $validated[$key] = $value($request, $validated);
             }
         }
+        foreach ($this->match_ids as $key => $value) {
+            if ($key == 'store') {
+                if (!$this->match_ids($validated, $value)) {
+                    return response()->json(["error" => "Unauthorized."]);
+                }
+            }
+        }
         $this->model::query()->create($validated);
         return response()->json(["message" => last(explode('\\', get_class(new $this->model()))) . " created successfully"]);
     }
 
-    public function index(Request $request): JsonResponse
+    public
+    function index(Request $request): JsonResponse
     {
         if ($this->ability_system && (!isset($this->ability_system_blacklist) || !array_search('store', $this->ability_system_blacklist)) && !FunctionUtils::isAuthorized($request->user($this->ability_guard), $this->ability_prefix . "-index")) {
             return response()->json(["error" => "Unauthorized."]);
         }
-        $query = $this->selection_query != null ? ($this->selection_query)($request) : (count($this->loadRelations) < 1 ? $this->model::query() : $this->model::with($this->loadRelations));
+        $validated = $request->validate($this->validation_index);
+        $custom_extensions = array_search("index", array_keys($this->validation_extensions));
+        if ($custom_extensions || $custom_extensions === 0) {
+            foreach ($this->validation_extensions['index'] as $key => $value) {
+                $validated[$key] = $value($request, $validated);
+            }
+        }
+        foreach ($this->match_ids as $key => $value) {
+            if ($key == 'index') {
+                if (!$this->match_ids($validated, $value)) {
+                    return response()->json(["error" => "Unauthorized."]);
+                }
+            }
+        }
+        $query = $this->selection_query != null && !in_array('index', $this->selection_query_blacklist) ? ($this->selection_query)($request) : (count($this->loadRelations) < 1 ? $this->model::query() : $this->model::with($this->loadRelations));
+        foreach ($this->selection_query_replace as $key => $value) {
+            if ($key == 'index') {
+                $query = $value($request, $validated);
+            }
+        }
         return FunctionUtils::automatedPaginationWithBuilder($request, $query, $this->resource);
     }
 
-    public function show($kw, Request $request): JsonResponse
+    public
+    function show($kw, Request $request): JsonResponse
     {
         if ($this->ability_system && (!isset($this->ability_system_blacklist) || !array_search('store', $this->ability_system_blacklist)) && !FunctionUtils::isAuthorized($request->user($this->ability_guard), $this->ability_prefix . "-show")) {
             return response()->json(["error" => "Unauthorized."]);
         }
-        $query = $this->selection_query != null ? ($this->selection_query)($request) : (count($this->loadRelations) < 1 ? $this->model::query() : $this->model::with($this->loadRelations));
+        $query = $this->selection_query != null && !in_array('show', $this->selection_query_blacklist) ? ($this->selection_query)($request) : (count($this->loadRelations) < 1 ? $this->model::query() : $this->model::with($this->loadRelations));
+        foreach ($this->selection_query_replace as $key => $value) {
+            if ($key == 'show') {
+                $query = $value($request);
+            }
+        }
         $custom_kw = array_search("show", array_keys($this->custom_kws));
         return response()->json($this->resource::make($query->firstWhere(($custom_kw || $custom_kw === 0) ? $this->custom_kws["show"] : "id", $kw)));
     }
 
-    public function edit($kw, Request $request): JsonResponse
+    public
+    function edit($kw, Request $request): JsonResponse
     {
         if ($this->ability_system && (!isset($this->ability_system_blacklist) || !array_search('store', $this->ability_system_blacklist)) && !FunctionUtils::isAuthorized($request->user($this->ability_guard), $this->ability_prefix . "-edit")) {
             return response()->json(["error" => "Unauthorized."]);
@@ -141,24 +192,36 @@ use Illuminate\Http\Request;
             }
         }
         $custom_kw = array_search("edit", array_keys($this->custom_kws));
-        $query = $this->selection_query != null ? ($this->selection_query)($request) : $this->model::query();
+        $query = $this->selection_query != null && !in_array('edit', $this->selection_query_blacklist) ? ($this->selection_query)($request) : $this->model::query();
+        foreach ($this->selection_query_replace as $key => $value) {
+            if ($key == 'edit') {
+                $query = $value($request, $validated);
+            }
+        }
         $model = $query->firstWhere(($custom_kw || $custom_kw === 0) ? $this->custom_kws["edit"] : "id", $kw);
         $model->update($validated);
         return response()->json(["message" => last(explode('\\', get_class(new $this->model()))) . " updated successfully"]);
     }
 
-    public function delete($kw, Request $request): JsonResponse
+    public
+    function delete($kw, Request $request): JsonResponse
     {
         if ($this->ability_system && (!isset($this->ability_system_blacklist) || !array_search('store', $this->ability_system_blacklist)) && !FunctionUtils::isAuthorized($request->user($this->ability_guard), $this->ability_prefix . "-delete")) {
             return response()->json(["error" => "Unauthorized."]);
         }
         $custom_kw = array_search("delete", array_keys($this->custom_kws));
-        $query = $this->selection_query != null ? ($this->selection_query)($request) : $this->model::query();
+        $query = $this->selection_query != null && !in_array('delete', $this->selection_query_blacklist) ? ($this->selection_query)($request) : $this->model::query();
+        foreach ($this->selection_query_replace as $key => $value) {
+            if ($key == 'delete') {
+                $query = $value($request);
+            }
+        }
         $query->firstWhere(($custom_kw || $custom_kw === 0) ? $this->custom_kws["delete"] : "id", $kw)->delete();
         return response()->json(["message" => last(explode('\\', get_class(new $this->model()))) . " deleted successfully"]);
     }
 
-    public function restore($kw, Request $request): JsonResponse
+    public
+    function restore($kw, Request $request): JsonResponse
     {
         if ($this->ability_system && (!isset($this->ability_system_blacklist) || !array_search('restore', $this->ability_system_blacklist)) && !FunctionUtils::isAuthorized($request->user($this->ability_guard), $this->ability_prefix . "-restore")) {
             return response()->json(["error" => "Unauthorized."]);
@@ -167,19 +230,38 @@ use Illuminate\Http\Request;
             throw new UnexpectedValueException('The model class must use the SoftDeletes trait.');
         }
         $custom_kw = array_search("restore", array_keys($this->custom_kws));
-        $query = $this->selection_query_with_trashed != null ? ($this->selection_query_with_trashed)($request) : $this->model::withTrashed();
+        $query = $this->selection_query_with_trashed != null && !in_array('restore', $this->selection_query_blacklist) ? ($this->selection_query_with_trashed)($request) : $this->model::withTrashed();
+        foreach ($this->selection_query_replace as $key => $value) {
+            if ($key == 'restore') {
+                $query = $value($request);
+            }
+        }
         $query->firstWhere(($custom_kw || $custom_kw === 0) ? $this->custom_kws["restore"] : "id", $kw)->restore();
         return response()->json(["message" => last(explode('\\', get_class(new $this->model()))) . " restored successfully"]);
     }
 
-    public function destroy($kw, Request $request): JsonResponse
+    public
+    function destroy($kw, Request $request): JsonResponse
     {
         if ($this->ability_system && (!isset($this->ability_system_blacklist) || !array_search('store', $this->ability_system_blacklist)) && !FunctionUtils::isAuthorized($request->user($this->ability_guard), $this->ability_prefix . "-destroy")) {
             return response()->json(["error" => "Unauthorized."]);
         }
         $custom_kw = array_search("destroy", array_keys($this->custom_kws));
-        $query = $this->selection_query_with_trashed != null ? ($this->selection_query_with_trashed)($request) : ($this->selection_query != null ? ($this->selection_query)($request) : $this->model::query());
+        $query = $this->selection_query_with_trashed != null && !in_array('destroy', $this->selection_query_blacklist) ? ($this->selection_query_with_trashed)($request) : ($this->selection_query != null ? ($this->selection_query)($request) : $this->model::query());
+        foreach ($this->selection_query_replace as $key => $value) {
+            if ($key == 'destroy') {
+                $query = $value($request);
+            }
+        }
         $query->firstWhere(($custom_kw || $custom_kw === 0) ? $this->custom_kws["destroy"] : "id", $kw)->forceDelete();
         return response()->json(["message" => last(explode('\\', get_class(new $this->model()))) . " permanently deleted successfully"]);
+    }
+
+    private function match_ids(array $validated, array $value)
+    {
+        $queried_id = $value[0];
+        $query_id = $value[1];
+        $query_model = $value[2];
+        return $query_model::query()->where($queried_id, $validated[$queried_id])->find($validated[$query_id]);
     }
 }

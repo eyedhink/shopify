@@ -6,6 +6,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\MessageControllerAdmin;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TicketController;
@@ -81,15 +82,15 @@ Route::middleware('auth:admin')->group(function () {
     Route::delete("/config-delete/{kw}", [ConfigController::class, "destroy"])
         ->middleware(AuthorizeAbility::class . ':config-destroy');
 
-    Route::post("/message-store-admin", [MessageController::class, "storeAdmin"])
+    Route::post("/message-store-admin", [MessageControllerAdmin::class, "store"])
         ->middleware(AuthorizeAbility::class . ':message-store');
-    Route::get("/message-index-admin", [MessageController::class, "indexAdmin"])
+    Route::get("/message-index-admin", [MessageControllerAdmin::class, "index"])
         ->middleware(AuthorizeAbility::class . ':message-index');
-    Route::get("/message-show-admin/{id}", [MessageController::class, "showAdmin"])
+    Route::get("/message-show-admin/{id}", [MessageControllerAdmin::class, "show"])
         ->middleware(AuthorizeAbility::class . ':message-show');
-    Route::put("/message-edit-admin/{id}", [MessageController::class, "editAdmin"])
+    Route::put("/message-edit-admin/{id}", [MessageControllerAdmin::class, "edit"])
         ->middleware(AuthorizeAbility::class . ':message-edit');
-    Route::delete("/message-destroy-admin/{id}", [MessageController::class, "destroyAdmin"])
+    Route::delete("/message-destroy-admin/{id}", [MessageControllerAdmin::class, "destroy"])
         ->middleware(AuthorizeAbility::class . ':message-destroy');
 
     Route::get("/order-index", [OrderController::class, "indexAdmin"])

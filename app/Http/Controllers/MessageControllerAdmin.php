@@ -4,19 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\MessageResource;
 use App\Models\Message;
-use App\Models\Ticket;
 use App\Utils\Controllers\BaseController;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
-class MessageController extends BaseController
+class MessageControllerAdmin extends BaseController
 {
     public function __construct()
     {
         parent::__construct(
             model: Message::class,
             resource: MessageResource::class,
-            loadRelations: ['user', 'ticket'],
+            loadRelations: ['admin', 'ticket'],
             validation: [
                 'content' => ['required', 'string'],
                 'ticket_id' => ['required', 'integer', 'exists:tickets,id'],
@@ -26,25 +25,22 @@ class MessageController extends BaseController
             ],
             validation_extensions: [
                 'store' => [
-                    'user_id' => fn(Request $request, array $validated) => $request->user('user')->id,
+                    'admin_id' => fn(Request $request, array $validated) => $request->user('admin')->id,
                 ],
                 'index' => [
-                    'user_id' => fn(Request $request, array $validated) => $request->user('user')->id,
+                    'admin_id' => fn(Request $request, array $validated) => $request->user('admin')->id,
                 ]
             ],
-            selection_query: fn(Request $request): Builder => Message::with(['user', 'ticket'])->where('user_id', $request->user('user')->id),
-            match_ids: [
-                'store' => ['user_id', 'ticket_id', Ticket::class],
-                'index' => ['user_id', 'ticket_id', Ticket::class],
-            ],
+            selection_query: fn(Request $request): Builder => Message::with(['admin', 'ticket'])->where('admin_id', $request->user('admin')->id),
             validation_index: [
                 'ticket_id' => ['required', 'integer', 'exists:tickets,id'],
             ],
             selection_query_blacklist: [
-                'index'
+                'index',
+                'show'
             ],
             selection_query_replace: [
-                'index' => fn(Request $request, array $validated): Builder => Message::with(['user', 'ticket'])
+                'index' => fn(Request $request, array $validated): Builder => Message::with(['admin', 'ticket'])
                     ->where('ticket_id', $validated['ticket_id']),
             ]
         );
