@@ -11,7 +11,6 @@ class ConfigController extends BaseController
     {
         parent::__construct(
             model: Config::class,
-            ability_prefix: 'config',
             validation: [
                 'key' => ['required', 'string'],
                 'value' => ['required', 'string'],

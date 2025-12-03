@@ -120,7 +120,10 @@ use Illuminate\Http\Request;
         $custom_extensions = array_search("store", array_keys($this->validation_extensions));
         if ($custom_extensions || $custom_extensions === 0) {
             foreach ($this->validation_extensions['store'] as $key => $value) {
-                $validated[$key] = $value($request, $validated);
+                $v = $value($request, $validated);
+                if ($v != null) {
+                    $validated[$key] = $v;
+                }
             }
         }
         foreach ($this->match_ids as $key => $value) {
@@ -144,7 +147,10 @@ use Illuminate\Http\Request;
         $custom_extensions = array_search("index", array_keys($this->validation_extensions));
         if ($custom_extensions || $custom_extensions === 0) {
             foreach ($this->validation_extensions['index'] as $key => $value) {
-                $validated[$key] = $value($request, $validated);
+                $v = $value($request, $validated);
+                if ($v != null) {
+                    $validated[$key] = $v;
+                }
             }
         }
         foreach ($this->match_ids as $key => $value) {
@@ -189,7 +195,10 @@ use Illuminate\Http\Request;
         $custom_extensions = array_search("edit", array_keys($this->validation_extensions));
         if ($custom_extensions || $custom_extensions === 0) {
             foreach ($this->validation_extensions['edit'] as $key => $value) {
-                $validated[$key] = $value($request, $validated);
+                $v = $value($request, $validated);
+                if ($v != null) {
+                    $validated[$key] = $v;
+                }
             }
         }
         $custom_kw = array_search("edit", array_keys($this->custom_kws));

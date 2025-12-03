@@ -16,8 +16,6 @@ class CategoryController extends BaseController
             model: Category::class,
             resource: CategoryResource::class,
             loadRelations: ['parent', 'children', 'products'],
-            ability_prefix: 'category',
-            ability_system_blacklist: ['index', 'show'],
             validation: [
                 'name' => ['required', 'string', 'unique:categories,name', 'max:255'],
                 'parent_id' => ['nullable', 'exists:categories,id'],
@@ -27,28 +25,34 @@ class CategoryController extends BaseController
                 'seo_keywords.*' => ['required', 'string']
             ],
             validation_extensions: [
-                'store' => [
-                    'seo_keywords' => fn(Request $request, array $validated) => isset($validated['seo_keywords']) ? json_encode($validated['seo_keywords']) : null,
-                    'seo_options' => fn(Request $request, array $validated) => json_encode(
-                        [
-                            "seo_title" => $validated['seo_title'] ?? null,
-                            "seo_meta_description" => $validated['seo_meta_description'] ?? null,
-                            'seo_keywords' => $validated['seo_keywords'] ?? null
-                        ]
-                    ),
-                    'depth' => function (Request $request, array $validated) {
-                        if (isset($validated['parent_id'])) {
-                            $parent = Category::query()->findOrFail($validated['parent_id']);
-                            if ($parent->depth > 5) {
-                                throw new UnprocessableEntityHttpException('Maximum number of subcategory depth reached');
-                            }
-                            return $parent->depth + 1;
-                        } else {
-                            return 0;
-                        }
-                    },
-                ]
+                'store' => $this->ext(),
+                'edit' => $this->ext()
             ]
         );
+    }
+
+    private function ext(): array
+    {
+        return [
+            'seo_keywords' => fn(Request $request, array $validated) => isset($validated['seo_keywords']) ? json_encode($validated['seo_keywords']) : null,
+            'seo_options' => fn(Request $request, array $validated) => json_encode(
+                [
+                    "seo_title" => $validated['seo_title'] ?? null,
+                    "seo_meta_description" => $validated['seo_meta_description'] ?? null,
+                    'seo_keywords' => $validated['seo_keywords'] ?? null
+                ]
+            ),
+            'depth' => function (Request $request, array $validated) {
+                if (isset($validated['parent_id'])) {
+                    $parent = Category::query()->findOrFail($validated['parent_id']);
+                    if ($parent->depth > 5) {
+                        throw new UnprocessableEntityHttpException('Maximum number of subcategory depth reached');
+                    }
+                    return $parent->depth + 1;
+                } else {
+                    return 0;
+                }
+            },
+        ];
     }
 }

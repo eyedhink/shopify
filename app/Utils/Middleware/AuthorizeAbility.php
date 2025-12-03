@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace App\Utils\Middleware;
 
 use App\Utils\Functions\FunctionUtils;
 use Closure;

@@ -11,16 +11,16 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
-use App\Http\Middleware\AuthorizeAbility;
+use App\Utils\Middleware\AuthorizeAbility;
 use Illuminate\Support\Facades\Route;
 
 Route::post("/admin-login", [AdminController::class, "login"]);
 
 Route::get("/category-index", [CategoryController::class, "index"]);
-Route::get("/category-show/{id}", [CategoryController::class, "show"]);
+Route::get("/category-show/{kw}", [CategoryController::class, "show"]);
 
 Route::get("/product-index", [ProductController::class, "index"]);
-Route::get("/product-show/{id}", [ProductController::class, "show"]);
+Route::get("/product-show/{kw}", [ProductController::class, "show"]);
 
 Route::post("/user-login", [UserController::class, "login"]);
 Route::post("/user-register", [UserController::class, "register"]);
@@ -41,9 +41,9 @@ Route::middleware('auth:user')->group(function () {
 
     Route::post("/message-store-user", [MessageController::class, "store"]);
     Route::get("/message-index-user", [MessageController::class, "index"]);
-    Route::get("/message-show-user/{id}", [MessageController::class, "show"]);
-    Route::put("/message-edit-user/{id}", [MessageController::class, "edit"]);
-    Route::delete("/message-destroy-user/{id}", [MessageController::class, "destroy"]);
+    Route::get("/message-show-user/{kw}", [MessageController::class, "show"]);
+    Route::put("/message-edit-user/{kw}", [MessageController::class, "edit"]);
+    Route::delete("/message-destroy-user/{kw}", [MessageController::class, "destroy"]);
 
     Route::get("/order-index-user", [OrderController::class, "index"]);
     Route::get("/order-show-user/{id}", [OrderController::class, "show"]);
@@ -64,11 +64,11 @@ Route::middleware('auth:admin')->group(function () {
 
     Route::post("/category-create", [CategoryController::class, "store"])
         ->middleware(AuthorizeAbility::class . ':category-store');
-    Route::put("/category-edit/{id}", [CategoryController::class, "edit"])
+    Route::put("/category-edit/{kw}", [CategoryController::class, "edit"])
         ->middleware(AuthorizeAbility::class . ':category-edit');
-    Route::delete("/category-delete/{id}", [CategoryController::class, "delete"])
+    Route::delete("/category-delete/{kw}", [CategoryController::class, "delete"])
         ->middleware(AuthorizeAbility::class . ':category-delete');
-    Route::delete("/category-restore/{id}", [CategoryController::class, "restore"])
+    Route::delete("/category-restore/{kw}", [CategoryController::class, "restore"])
         ->middleware(AuthorizeAbility::class . ':category-restore');
 
     Route::post("/config-store", [ConfigController::class, "store"])
@@ -86,11 +86,11 @@ Route::middleware('auth:admin')->group(function () {
         ->middleware(AuthorizeAbility::class . ':message-store');
     Route::get("/message-index-admin", [MessageControllerAdmin::class, "index"])
         ->middleware(AuthorizeAbility::class . ':message-index');
-    Route::get("/message-show-admin/{id}", [MessageControllerAdmin::class, "show"])
+    Route::get("/message-show-admin/{kw}", [MessageControllerAdmin::class, "show"])
         ->middleware(AuthorizeAbility::class . ':message-show');
-    Route::put("/message-edit-admin/{id}", [MessageControllerAdmin::class, "edit"])
+    Route::put("/message-edit-admin/{kw}", [MessageControllerAdmin::class, "edit"])
         ->middleware(AuthorizeAbility::class . ':message-edit');
-    Route::delete("/message-destroy-admin/{id}", [MessageControllerAdmin::class, "destroy"])
+    Route::delete("/message-destroy-admin/{kw}", [MessageControllerAdmin::class, "destroy"])
         ->middleware(AuthorizeAbility::class . ':message-destroy');
 
     Route::get("/order-index", [OrderController::class, "indexAdmin"])
@@ -108,11 +108,11 @@ Route::middleware('auth:admin')->group(function () {
 
     Route::post("/product-create", [ProductController::class, "store"])
         ->middleware(AuthorizeAbility::class . ':product-store');
-    Route::post("/product-edit/{id}", [ProductController::class, "edit"])
+    Route::post("/product-edit/{kw}", [ProductController::class, "edit"])
         ->middleware(AuthorizeAbility::class . ':product-edit');
-    Route::delete("/product-delete/{id}", [ProductController::class, "delete"])
+    Route::delete("/product-delete/{kw}", [ProductController::class, "delete"])
         ->middleware(AuthorizeAbility::class . ':product-delete');
-    Route::delete("/product-restore/{id}", [ProductController::class, "restore"])
+    Route::delete("/product-restore/{kw}", [ProductController::class, "restore"])
         ->middleware(AuthorizeAbility::class . ':product-restore');
 
     Route::get("/ticket-index-admin", [TicketController::class, "indexAdmin"])
