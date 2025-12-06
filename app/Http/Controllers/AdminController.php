@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Utils\Controllers\Controller;
+use App\Utils\Exceptions\InvalidCredentialsException;
 use GeoSot\EnvEditor\EnvEditor;
 use GeoSot\EnvEditor\Exceptions\EnvException;
 use Illuminate\Config\Repository;
@@ -11,14 +12,13 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 use PDO;
 
 class AdminController extends Controller
 {
     /**
-     * @throws ValidationException
      * @throws EnvException
+     * @throws InvalidCredentialsException
      */
     public function login(Request $request): JsonResponse
     {
@@ -47,9 +47,7 @@ class AdminController extends Controller
                 'token' => $admin->createToken('admin-token', $request)->plainTextToken
             ]);
         }
-        throw ValidationException::withMessages([
-            'name' => ['The provided credentials are incorrect.'],
-        ]);
+       throw new InvalidCredentialsException();
     }
 
     public function store(Request $request): JsonResponse

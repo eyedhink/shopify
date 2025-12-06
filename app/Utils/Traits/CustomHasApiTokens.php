@@ -2,6 +2,7 @@
 
 namespace App\Utils\Traits;
 
+use App\Utils\Exceptions\AccessDeniedException;
 use DateTimeInterface;
 use GeoSot\EnvEditor\EnvEditor;
 use GeoSot\EnvEditor\Exceptions\EnvException;
@@ -10,9 +11,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\NewAccessToken;
-use Laravel\Sanctum\PersonalAccessToken;
 use PDO;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 trait CustomHasApiTokens
 {
@@ -22,16 +21,17 @@ trait CustomHasApiTokens
 
     /**
      * @throws EnvException
+     * @throws AccessDeniedException
      */
     public function createToken(string $name, Request $request, array $abilities = ['*'], ?DateTimeInterface $expiresAt = null): NewAccessToken
     {
-        $token = $this->parentCreateToken($name, $abilities, $expiresAt);
-        $pdo = new PDO("sqlite:D:\programming\PHP\shopify\database\db.sqlite");
-        $stmt = $pdo->query("SELECT name FROM `databases`");
         $editor = new EnvEditor(new Repository(), new Filesystem());
+        $token = $this->parentCreateToken($name, $abilities, $expiresAt);
+        $pdo = new PDO($editor->getKey('DBS_DB_DSN'));
+        $stmt = $pdo->query("SELECT name FROM `databases`");
         foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $name) {
             $editor->editKey("DB_DATABASE", $name);
-            $tokenModel = PersonalAccessToken::query()->find(explode("|", $token->plainTextToken)[0]);
+            $tokenModel = $token->accessToken;
             if ($tokenModel !== null) {
                 $model = $tokenModel['tokenable']::query()->find(($tokenModel['tokenable_id']));
                 if ($model !== null) {
@@ -41,6 +41,6 @@ trait CustomHasApiTokens
                 }
             }
         }
-        throw new UnauthorizedHttpException("Unauthorized");
+        throw new AccessDeniedException();
     }
 }

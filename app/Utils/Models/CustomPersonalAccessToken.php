@@ -21,7 +21,7 @@ class CustomPersonalAccessToken extends PersonalAccessToken
     {
         $editor = new EnvEditor(new Repository(), new Filesystem());
         $db = explode("|", explode("Bearer ", $request->header('Authorization'))[1])[0];
-        $pdo = new PDO("sqlite:D:\programming\PHP\shopify\database\db.sqlite");
+        $pdo = new PDO($editor->getKey('DBS_DB_DSN'));
         $stmt = $pdo->query("SELECT name FROM `databases`");
         foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $name) {
             if (hash('sha256', $name) == $db) {

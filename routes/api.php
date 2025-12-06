@@ -8,6 +8,7 @@ use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MessageControllerAdmin;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderControllerAdmin;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TicketControllerAdmin;
@@ -94,17 +95,17 @@ Route::middleware('auth:admin')->group(function () {
     Route::delete("/message-destroy-admin/{kw}", [MessageControllerAdmin::class, "destroy"])
         ->middleware(AuthorizeAbility::class . ':message-destroy');
 
-    Route::get("/order-index", [OrderController::class, "indexAdmin"])
+    Route::get("/order-index", [OrderControllerAdmin::class, "index"])
         ->middleware(AuthorizeAbility::class . ':order-index');
-    Route::get("/order-show/{id}", [OrderController::class, "showAdmin"])
+    Route::get("/order-show/{id}", [OrderControllerAdmin::class, "show"])
         ->middleware(AuthorizeAbility::class . ':order-show');
-    Route::put("/order-update-status/{id}", [OrderController::class, "updateStatus"])
+    Route::put("/order-update-status/{id}", [OrderControllerAdmin::class, "updateStatus"])
         ->middleware(AuthorizeAbility::class . ':order-update-status');
-    Route::delete("/order-delete/{id}", [OrderController::class, "delete"])
+    Route::delete("/order-delete/{id}", [OrderControllerAdmin::class, "delete"])
         ->middleware(AuthorizeAbility::class . ':order-delete');
-    Route::delete("/order-restore/{id}", [OrderController::class, "restore"])
+    Route::delete("/order-restore/{id}", [OrderControllerAdmin::class, "restore"])
         ->middleware(AuthorizeAbility::class . ':order-restore');
-    Route::post("/order-manual-store", [OrderController::class, "store"])
+    Route::post("/order-manual-store", [OrderControllerAdmin::class, "store"])
         ->middleware(AuthorizeAbility::class . ':order-manual-store');
 
     Route::post("/product-create", [ProductController::class, "store"])

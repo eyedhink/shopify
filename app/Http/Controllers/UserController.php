@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Utils\Controllers\Controller;
-use App\Utils\Functions\FunctionUtils;
+use App\Utils\Exceptions\InvalidCredentialsException;
 use GeoSot\EnvEditor\EnvEditor;
 use GeoSot\EnvEditor\Exceptions\EnvException;
 use Illuminate\Config\Repository;
@@ -13,14 +13,14 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 use PDO;
 use function PHPUnit\Framework\isNull;
 
 class UserController extends Controller
 {
     /**
-     * @throws ValidationException|EnvException
+     * @throws EnvException
+     * @throws InvalidCredentialsException
      */
     public function login(Request $request): JsonResponse
     {
@@ -49,9 +49,7 @@ class UserController extends Controller
                 'token' => $user->createToken('user-token', $request)->plainTextToken
             ]);
         }
-        throw ValidationException::withMessages([
-            'name' => ['The provided credentials are incorrect.'],
-        ]);
+        throw new InvalidCredentialsException();
     }
 
     public function register(Request $request): JsonResponse
@@ -110,7 +108,7 @@ class UserController extends Controller
         return response()->json(["message" => "Users added"]);
     }
 
-    function storeBunchExcel(Request $request): JsonResponse
+    function storeBunchExcel(): JsonResponse
     {
 //        $validated = $request->validate([
 //            'file' => ['required', 'file', 'mimes:xlsx']

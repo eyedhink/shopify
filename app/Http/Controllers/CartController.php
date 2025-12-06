@@ -9,12 +9,18 @@ use App\Models\Item;
 use App\Models\Order;
 use App\Models\Product;
 use App\Utils\Controllers\Controller;
+use App\Utils\Exceptions\InsufficientStockException;
+use App\Utils\Exceptions\NonExistentAddressException;
+use App\Utils\Exceptions\NonExistentItemException;
 use App\Utils\Functions\FunctionUtils;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
+    /**
+     * @throws InsufficientStockException
+     */
     function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -32,18 +38,14 @@ class CartController extends Controller
             $newQuantity = $item->quantity + $validated['quantity'];
             if ($newQuantity <= 0) {
                 $item->delete();
-                return response()->json(["error" => "Removed item from cart"]);
+                return response()->json(["message" => "Removed item from cart"]);
             }
             if ($newQuantity > $product->stock) {
-                return response()->json(["error" => "Insufficient stock"], 400);
+                throw new InsufficientStockException();
             }
             $item->quantity = $newQuantity;
             $item->save();
             return response()->json(["message" => "Item added to cart"]);
-        }
-
-        if ($validated["quantity"] <= 0) {
-            return response()->json(["error" => "invalid quantity"]);
         }
 
         Item::query()->create($validated);
@@ -78,18 +80,25 @@ class CartController extends Controller
         );
     }
 
+    /**
+     * @throws NonExistentItemException
+     */
     function destroy(Request $request, $id): JsonResponse
     {
         $item = Item::query()->where('user_id', $request->user('user')->id)->find($id);
 
         if (!$item) {
-            return response()->json(["error" => "Unauthorized"]);
+            throw new NonexistentItemException();
         }
 
         $item->delete();
         return response()->json(["message" => "Item deleted successfully"]);
     }
 
+    /**
+     * @throws NonExistentAddressException
+     * @throws InsufficientStockException
+     */
     function submit(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -97,7 +106,7 @@ class CartController extends Controller
         ]);
         $address = Address::query()->where('user_id', $request->user('user')->id)->find($validated['address_id']);
         if (!$address) {
-            return response()->json(["error" => "Unauthorized"]);
+            throw new NonexistentAddressException();
         }
         $items = [];
         $total = 0;
@@ -107,7 +116,7 @@ class CartController extends Controller
             var_dump($product->price, $item->quantity, $product->discount);
             $total += $product->price * $item->quantity * (100 - $product->discount) / 100;
             if ($product->stock < $item->quantity) {
-                return response()->json(["error" => "Insufficient stock"]);
+                throw new InsufficientStockException();
             }
             $product->stock -= $item->quantity;
             $product->save();

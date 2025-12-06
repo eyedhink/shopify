@@ -6,8 +6,8 @@ use App\Http\Resources\ProductResource;
 use App\Models\Category;
 use App\Models\Product;
 use App\Utils\Controllers\BaseController;
+use App\Utils\Exceptions\ImpossibleRequestException;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class ProductController extends BaseController
 {
@@ -50,7 +50,7 @@ class ProductController extends BaseController
                 }
                 $category = Category::query()->findOrFail($validated['category_id']);
                 if (!isset($category->parent_id)) {
-                    throw new UnprocessableEntityHttpException('You can\'t add to main categories');
+                    throw new ImpossibleRequestException();
                 }
                 return $validated['category_id'];
             },
