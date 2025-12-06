@@ -11,7 +11,7 @@ return [
     |
     | Here you may specify which of the database connections below you wish
     | to use as your default connection for database operations. This is
-    | the connection which will be utilized unless another connection
+    | the connection which will be used unless another connection
     | is explicitly specified when you execute a query / statement.
     |
     */
@@ -23,8 +23,8 @@ return [
     | Database Connections
     |--------------------------------------------------------------------------
     |
-    | Below are all of the database connections defined for your application.
-    | An example configuration is provided for each database system which
+    | Below are all the database connections defined for your application.
+    | An example configuration is provided for each database system that
     | is supported by Laravel. You're free to add / remove connections.
     |
     */
@@ -122,7 +122,7 @@ return [
     |
     | This table keeps track of all the migrations that have already run for
     | your application. Using this information, we can determine which of
-    | the migrations on disk haven't actually been run on the database.
+    | the migrations on disk haven't been run on the database.
     |
     */
 

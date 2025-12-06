@@ -8,8 +8,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | This value is the name of your application, which will be used when the
-    | framework needs to place the application's name in a notification or
-    | other UI elements where an application name needs to be displayed.
+    | framework needs to place the application's name in a notification
+    | or other UI elements where an application name needs to be displayed.
     |
     */
 
@@ -34,8 +34,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | When your application is in debug mode, detailed error messages with
-    | stack traces will be shown on every error that occurs within your
-    | application. If disabled, a simple generic error page is shown.
+    | stack traces will be shown on every error that occurs within
+    | your application. If disabled, a simple generic error page is shown.
     |
     */
 
@@ -90,8 +90,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | This key is utilized by Laravel's encryption services and should be set
-    | to a random, 32 character string to ensure that all encrypted values
-    | are secure. You should do this prior to deploying the application.
+    | to a random, 32-character string to ensure that all encrypted values
+    | are secure. You should do this before deploying the application.
     |
     */
 
