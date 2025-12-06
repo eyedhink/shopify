@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 
 class OrderControllerAdmin extends Controller
 {
-    public function indexAdmin(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         return FunctionUtils::automatedPaginationWithBuilder
         (
@@ -27,7 +27,7 @@ class OrderControllerAdmin extends Controller
         );
     }
 
-    public function showAdmin($id): JsonResponse
+    public function show($id): JsonResponse
     {
         return response()->json(
             OrderResource::make

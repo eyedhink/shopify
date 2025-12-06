@@ -184,7 +184,7 @@
                 {
                     "name": "Jordi Boggiano",
                     "email": "j.boggiano@seld.be",
-                    "homepage": "http://seld.be"
+                    "homepage": "https://seld.be"
                 }
             ],
             "description": "PCRE wrapping library that offers type-safe preg_* replacements.",
@@ -254,17 +254,17 @@
                 {
                     "name": "Nils Adermann",
                     "email": "naderman@naderman.de",
-                    "homepage": "http://www.naderman.de"
+                    "homepage": "https://www.naderman.de"
                 },
                 {
                     "name": "Jordi Boggiano",
                     "email": "j.boggiano@seld.be",
-                    "homepage": "http://seld.be"
+                    "homepage": "https://seld.be"
                 },
                 {
                     "name": "Rob Bast",
                     "email": "rob.bast@gmail.com",
-                    "homepage": "http://robbast.nl"
+                    "homepage": "https://robbast.nl"
                 }
             ],
             "description": "Semver library that offers utilities, version constraint parsing and validation.",
@@ -334,12 +334,12 @@
                 {
                     "name": "Dragonfly Development Inc.",
                     "email": "info@dflydev.com",
-                    "homepage": "http://dflydev.com"
+                    "homepage": "https://dflydev.com"
                 },
                 {
                     "name": "Beau Simensen",
                     "email": "beau@dflydev.com",
-                    "homepage": "http://beausimensen.com"
+                    "homepage": "https://beausimensen.com"
                 },
                 {
                     "name": "Carlos Frutos",
@@ -711,11 +711,11 @@
                 {
                     "name": "Edward Z. Yang",
                     "email": "admin@htmlpurifier.org",
-                    "homepage": "http://ezyang.com"
+                    "homepage": "https://ezyang.com"
                 }
             ],
             "description": "Standards compliant HTML filter written in PHP",
-            "homepage": "http://htmlpurifier.org/",
+            "homepage": "https://htmlpurifier.org/",
             "keywords": [
                 "html"
             ],
@@ -3442,7 +3442,7 @@
             "authors": [
                 {
                     "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
+                    "homepage": "https://www.php-fig.org/"
                 }
             ],
             "description": "Standard interfaces for event handling.",
@@ -8215,7 +8215,7 @@
                 }
             ],
             "description": "Common reflection classes used by phpdocumentor to reflect the code structure",
-            "homepage": "http://www.phpdoc.org",
+            "homepage": "https://www.phpdoc.org",
             "keywords": [
                 "FQSEN",
                 "phpDocumentor",

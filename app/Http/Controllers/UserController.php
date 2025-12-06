@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Utils\Controllers\Controller;
+use App\Utils\Exceptions\AccessDeniedException;
 use App\Utils\Exceptions\InvalidCredentialsException;
 use GeoSot\EnvEditor\EnvEditor;
 use GeoSot\EnvEditor\Exceptions\EnvException;
@@ -20,7 +21,7 @@ class UserController extends Controller
 {
     /**
      * @throws EnvException
-     * @throws InvalidCredentialsException
+     * @throws InvalidCredentialsException|AccessDeniedException
      */
     public function login(Request $request): JsonResponse
     {

@@ -3,13 +3,7 @@
 namespace App\Utils\Controllers;
 
 use AllowDynamicProperties;
-use App\Utils\Controllers\ControllerTraits\Delete;
-use App\Utils\Controllers\ControllerTraits\Destroy;
-use App\Utils\Controllers\ControllerTraits\Edit;
-use App\Utils\Controllers\ControllerTraits\Index;
-use App\Utils\Controllers\ControllerTraits\Restore;
-use App\Utils\Controllers\ControllerTraits\Show;
-use App\Utils\Controllers\ControllerTraits\Store;
+use App\Utils\Controllers\ControllerTraits\AIO;
 use App\Utils\Resources\BaseResource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -17,25 +11,7 @@ use Illuminate\Http\Request;
 
 #[AllowDynamicProperties] class BaseController extends Controller
 {
-    use Store, Index, Show, Edit, Delete, Restore, Destroy;
-
-    private string $model;
-    private string $resource;
-    private array $loadRelations;
-    private bool $ability_system;
-    private string $ability_guard;
-    private string $ability_prefix;
-    private array $ability_system_blacklist;
-    private array $validation;
-    private array $validation_create;
-    private array $validation_index;
-    private array $validation_update;
-    private array $validation_extensions;
-    private array $custom_kws;
-    private array $selection_query_blacklist;
-    private array $selection_query_replace;
-    private array $match_ids;
-
+    use AIO;
 
     /**
      * @template TModel of Model
