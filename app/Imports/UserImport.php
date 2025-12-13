@@ -15,12 +15,12 @@ class UserImport implements ToModel
      */
     public function model(array $row): Model|User|null
     {
-        var_dump($row);
         return new User([
             'name' => $row[0],
             'password' => $row[1],
-            'phone' => $row[2],
-            'database' => $row[3],
+            'credits' => $row[2],
+            'phone' => $row[3],
+            'database' => $row[4],
         ]);
     }
 
