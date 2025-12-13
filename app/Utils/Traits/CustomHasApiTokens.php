@@ -33,7 +33,8 @@ trait CustomHasApiTokens
             $editor->editKey("DB_DATABASE", $name);
             $tokenModel = $token->accessToken;
             if ($tokenModel !== null) {
-                $model = $tokenModel['tokenable']::query()->find(($tokenModel['tokenable_id']));
+//                $model = $tokenModel['tokenable']::query()->find(($tokenModel['tokenable_id']));
+                $model = $tokenModel->tokenable;
                 if ($model !== null) {
                     $db = $model['database'];
                     $token->plainTextToken = hash('sha256', $db) . "|" . explode("|", $token->plainTextToken)[1];

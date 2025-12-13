@@ -27,6 +27,8 @@ class User extends Model
         'password',
     ];
 
+    protected $guarded = ['id'];
+
     public function items(): HasMany
     {
         return $this->hasMany(Item::class);

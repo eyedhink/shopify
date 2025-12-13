@@ -9,7 +9,6 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Config\Repository;
 use Illuminate\Filesystem\Filesystem;
-use Laravel\Sanctum\PersonalAccessToken;
 use PDO;
 
 class CustomAuthGuard extends Authenticate
@@ -31,9 +30,7 @@ class CustomAuthGuard extends Authenticate
         }
         $ex_token = explode('|', explode("Bearer ", $request->header('Authorization'))[1]);
         $access_token = $ex_token[1];
-        $token = PersonalAccessToken::query()->where('token', hash('sha256', $access_token))->first();
-        $request->headers->set('Authorization', "Bearer " . $token->id . "|" . $access_token);
-//        var_dump("Bearer " . $token->id . "|" . $access_token);
+        $request->headers->set('Authorization', "Bearer " . $access_token);
         return parent::handle($request, $next, ...$guards);
     }
 }

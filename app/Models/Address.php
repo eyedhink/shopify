@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Address extends Model
 {
     protected $table = 'addresses';
-
     protected $fillable = [
         'user_id',
         'address',

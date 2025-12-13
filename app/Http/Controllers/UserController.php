@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
+use App\Imports\UserImport;
 use App\Models\User;
 use App\Utils\Controllers\Controller;
 use App\Utils\Exceptions\AccessDeniedException;
@@ -14,7 +15,9 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use PDO;
+use Maatwebsite\Excel\Facades\Excel;
 use function PHPUnit\Framework\isNull;
 
 class UserController extends Controller
@@ -35,7 +38,6 @@ class UserController extends Controller
         $stmt = $pdo->query("SELECT name FROM `databases`");
         foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $name) {
             $editor->editKey('DB_DATABASE', $name);
-
             $user = User::query()->firstWhere('phone', $validated['phone']);
 
             if (!$user) {
@@ -109,18 +111,14 @@ class UserController extends Controller
         return response()->json(["message" => "Users added"]);
     }
 
-    function storeBunchExcel(): JsonResponse
+    function storeBunchExcel(Request $request): JsonResponse
     {
-//        $validated = $request->validate([
-//            'file' => ['required', 'file', 'mimes:xlsx']
-//        ]);
-//        $validated['file'] = $request->file("file")->store('excel', 'private');
-//        $contents = Storage::disk('local')->get($validated['file']);
-//        $path = Storage::disk('local')->path($validated['file']);
-//        var_dump($path);
-//       $spreadsheet = IOFactory::load($path);
-//       $data = $spreadsheet->getActiveSheet()->toArray();
-//       dd($data);
-        return response()->json(["message" => "Under Construction"]);
+        $validated = $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx']
+        ]);
+        $validated['file'] = $request->file("file")->store('excel', 'private');
+        $path = Storage::disk('local')->path($validated['file']);
+        Excel::import(new UserImport(), $path);
+        return response()->json(["message" => "NICE!"]);
     }
 }

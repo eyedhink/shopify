@@ -50,7 +50,7 @@ Route::middleware('auth:user')->group(function () {
     Route::get("/order-index-user", [OrderController::class, "index"]);
     Route::get("/order-show-user/{id}", [OrderController::class, "show"]);
     Route::post("/order-pay/{id}", [OrderController::class, "pay"]);
-    Route::delete("/order-force-delete-user/{id}", [OrderController::class, "destroy"]);
+//    Route::delete("/order-force-delete-user/{id}", [OrderController::class, "destroy"]);
 
     Route::post("/ticket-store", [TicketController::class, "store"]);
     Route::get("/ticket-index", [TicketController::class, "index"]);
